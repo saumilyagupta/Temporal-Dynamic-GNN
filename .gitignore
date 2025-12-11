@@ -125,11 +125,16 @@ NiAD_*_Videos_processed_graphs/
 NiAD_graphs_*/
 NiAD_Large_Videos/
 NiAD_Large_Videos_processed_graphs/
+NiADlarge/
 final_dataset_new/
 processed/
 graphs/
 raw_data/
 video_data/
+Night videos/
+cropped_videos/
+tagged_video/
+sample_tagged_video/
 *.mp4
 *.avi
 *.mov
@@ -159,4 +164,9 @@ Thumbs.db
 node_modules/
 .cache/
 *.cache
+
+# Database files (experiment databases)
+*.db
+!Thumbs.db
+optuna_study.db
 
