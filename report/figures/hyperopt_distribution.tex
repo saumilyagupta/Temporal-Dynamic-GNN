@@ -1,0 +1,42 @@
+% Hyperopt Distribution Histogram
+\begin{tikzpicture}
+\begin{axis}[
+    ybar,
+    width=10cm,
+    height=6cm,
+    xlabel={Validation Accuracy},
+    ylabel={Number of Trials},
+    xmin=0.25, xmax=0.95,
+    ymin=0, ymax=50,
+    symbolic x coords={0.333, 0.500, 0.667, 0.833},
+    xtick=data,
+    bar width=1.2cm,
+    nodes near coords,
+    nodes near coords style={font=\small},
+    title={\textbf{Distribution of Validation Accuracy}},
+    title style={font=\bfseries}
+]
+
+\addplot[fill=blue!60] coordinates {
+    (0.333, 5)
+    (0.500, 35)
+    (0.667, 51)
+    (0.833, 8)
+};
+
+\end{axis}
+
+% Statistics
+\node[font=\small, align=left, fill=white, draw, rounded corners] at (9, 3) {
+    \textbf{Statistics}\\
+    Mean: 0.618\\
+    Std: 0.104\\
+    Min: 0.333\\
+    Max: 0.833
+};
+
+\end{tikzpicture}
+
+
+
+

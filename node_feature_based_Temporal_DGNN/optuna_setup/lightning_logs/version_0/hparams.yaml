@@ -1,0 +1,8 @@
+focal_loss_alpha: 0.6080000000000001
+focal_loss_gamma: 1.0
+learning_rate: 3.829113932882321e-05
+monitor_metric: val_f1
+monitor_mode: max
+optimizer: adam
+scheduler: plateau
+weight_decay: 2.7231888989183508e-06

@@ -1,0 +1,69 @@
+% Pipeline Flow Diagram
+\begin{tikzpicture}[
+    node distance=0.6cm and 1cm,
+    box/.style={
+        rectangle,
+        rounded corners=3pt,
+        minimum width=2cm,
+        minimum height=0.8cm,
+        align=center,
+        draw=black,
+        thick,
+        font=\footnotesize
+    },
+    smallbox/.style={
+        rectangle,
+        rounded corners=2pt,
+        minimum width=1.5cm,
+        minimum height=0.5cm,
+        align=center,
+        draw=black,
+        font=\tiny
+    },
+    input/.style={box, fill=cyan!25},
+    process/.style={box, fill=green!25},
+    output/.style={box, fill=orange!25},
+    data/.style={smallbox, fill=purple!20},
+    arrow/.style={-Stealth, thick}
+]
+
+% Stage 1: Input
+\node[input] (video) at (0, 2.5) {Video Files};
+\node[data, below=0.2cm of video] (d1) {30 frames};
+
+% Stage 2: Frame Extraction
+\node[process] (frames) at (2.5, 2.5) {Frame Extract};
+\node[data, below=0.2cm of frames] (d2) {RGB};
+
+% Stage 3: YOLO Detection
+\node[process] (yolo) at (5, 2.5) {YOLOv8};
+\node[data, below=0.2cm of yolo] (d3) {Boxes};
+
+% Stage 4: Vehicle Tracking
+\node[process] (track) at (7.5, 2.5) {Tracking};
+\node[data, below=0.2cm of track] (d4) {IDs};
+
+% Stage 5: Graph Construction
+\node[process] (graph) at (5, 0) {Graph Build};
+
+% Sub-processes
+\node[smallbox, fill=yellow!20] (nodes) at (2.5, 0) {Features};
+\node[smallbox, fill=yellow!20] (edges) at (7.5, 0) {Edges};
+
+% Stage 6: Output
+\node[output] (pt) at (10, 0) {.pt Files};
+\node[output] (csv) at (10, 2.5) {Manifest};
+
+% Arrows - main flow
+\draw[arrow] (video) -- (frames);
+\draw[arrow] (frames) -- (yolo);
+\draw[arrow] (yolo) -- (track);
+\draw[arrow] (track) -- (csv);
+\draw[arrow] (track) |- (graph);
+
+% Arrows - graph construction
+\draw[arrow] (nodes) -- (graph);
+\draw[arrow] (edges) -- (graph);
+\draw[arrow] (graph) -- (pt);
+
+\end{tikzpicture}

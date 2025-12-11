@@ -1,0 +1,68 @@
+% Message Passing Diagram
+\begin{tikzpicture}[
+    node distance=1.5cm,
+    vertex/.style={
+        circle,
+        draw=black,
+        thick,
+        minimum size=0.8cm,
+        font=\small
+    },
+    center/.style={vertex, fill=orange!40},
+    neighbor/.style={vertex, fill=green!30},
+    other/.style={vertex, fill=gray!20},
+    arrow/.style={-Stealth, thick},
+    messagearrow/.style={-Stealth, thick, blue!70, dashed}
+]
+
+% Title
+\node[font=\bfseries] at (3, 3.5) {Message Passing in GNN};
+
+% Center node
+\node[center] (v) at (3, 1.5) {$v$};
+
+% Neighbor nodes
+\node[neighbor] (n1) at (1, 2.5) {$u_1$};
+\node[neighbor] (n2) at (2, 3) {$u_2$};
+\node[neighbor] (n3) at (4, 3) {$u_3$};
+\node[neighbor] (n4) at (5, 2.5) {$u_4$};
+\node[neighbor] (n5) at (4.5, 0.5) {$u_5$};
+\node[neighbor] (n6) at (1.5, 0.5) {$u_6$};
+
+% Edges
+\draw[thick] (v) -- (n1);
+\draw[thick] (v) -- (n2);
+\draw[thick] (v) -- (n3);
+\draw[thick] (v) -- (n4);
+\draw[thick] (v) -- (n5);
+\draw[thick] (v) -- (n6);
+
+% Message arrows
+\draw[messagearrow] (n1) -- (v);
+\draw[messagearrow] (n2) -- (v);
+\draw[messagearrow] (n3) -- (v);
+\draw[messagearrow] (n4) -- (v);
+\draw[messagearrow] (n5) -- (v);
+\draw[messagearrow] (n6) -- (v);
+
+% Equations
+\node[align=left, font=\small] at (8.5, 2.5) {
+    \textbf{1. Message:}\\[0.2cm]
+    $\vect{m}_{u \to v} = \phi(\vect{h}_u, \vect{h}_v, e_{uv})$\\[0.4cm]
+    \textbf{2. Aggregate:}\\[0.2cm]
+    $\vect{a}_v = \bigoplus_{u \in \mathcal{N}(v)} \vect{m}_{u \to v}$\\[0.4cm]
+    \textbf{3. Update:}\\[0.2cm]
+    $\vect{h}_v^{(l)} = \psi(\vect{h}_v^{(l-1)}, \vect{a}_v)$
+};
+
+% Legend
+\node[center, minimum size=0.5cm] at (0.5, -0.5) {};
+\node[font=\tiny, right] at (0.8, -0.5) {Target node};
+\node[neighbor, minimum size=0.5cm] at (3, -0.5) {};
+\node[font=\tiny, right] at (3.3, -0.5) {Neighbors $\mathcal{N}(v)$};
+
+\end{tikzpicture}
+
+
+
+

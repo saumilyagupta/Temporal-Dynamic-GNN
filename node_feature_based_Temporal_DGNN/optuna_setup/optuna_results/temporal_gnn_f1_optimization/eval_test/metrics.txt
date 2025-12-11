@@ -1,0 +1,13 @@
+TemporalGNN Evaluation Results
+========================================
+Checkpoint: optuna_setup/optuna_results/temporal_gnn_f1_optimization/best_model.ckpt
+Split: test
+Timestamp: 2025-12-11 15:38:36
+========================================
+
+Metrics:
+accuracy: 0.8932
+precision: 0.0000
+recall: 0.0000
+f1: 0.0000
+auc_roc: 0.5450

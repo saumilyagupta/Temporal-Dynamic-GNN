@@ -1,0 +1,53 @@
+% Data Augmentation Diagram
+\begin{tikzpicture}[
+    frame/.style={
+        rectangle,
+        draw=black,
+        rounded corners,
+        minimum width=1.8cm,
+        minimum height=1.4cm,
+        font=\tiny
+    },
+    arrow/.style={-Stealth, thick}
+]
+
+% Title
+\node[font=\bfseries] at (5, 5) {Data Augmentation (4$\times$)};
+
+% Original frame
+\node[frame, fill=gray!20] (orig) at (0, 2.5) {};
+\node[font=\footnotesize\bfseries, above=0.1cm of orig] {Original};
+\draw[fill=blue!30, draw=black] (-0.3, 2.2) rectangle (0.2, 2.6);
+\draw[fill=blue!30, draw=black] (0, 2.0) rectangle (0.3, 2.2);
+
+% Brightness adjusted
+\node[frame, fill=yellow!30] (bright) at (4, 4) {};
+\node[font=\footnotesize, above=0.1cm of bright] {Bright};
+\draw[fill=blue!50, draw=black] (3.7, 3.7) rectangle (4.2, 4.1);
+\draw[fill=blue!50, draw=black] (4, 3.5) rectangle (4.3, 3.7);
+
+% Horizontal flip
+\node[frame, fill=green!20] (flip) at (4, 1) {};
+\node[font=\footnotesize, above=0.1cm of flip] {Flip};
+\draw[fill=blue!30, draw=black] (3.8, 0.7) rectangle (4.3, 1.1);
+\draw[fill=blue!30, draw=black] (3.7, 0.5) rectangle (4, 0.7);
+
+% Spatial shift
+\node[frame, fill=orange!20] (shift) at (8, 2.5) {};
+\node[font=\footnotesize, above=0.1cm of shift] {Shift};
+\draw[fill=blue!30, draw=black] (7.2, 2.2) rectangle (7.7, 2.6);
+\draw[fill=blue!30, draw=black] (7.5, 2.0) rectangle (7.8, 2.2);
+
+% Arrows
+\draw[arrow] (orig) -- (bright);
+\draw[arrow] (orig) -- (flip);
+\draw[arrow] (orig) -- (shift);
+
+% Statistics box
+\node[draw, rounded corners, fill=white, font=\footnotesize, align=left] at (11, 2.5) {
+    \textbf{Augmentation:}\\
+    51 Anomalous $\times$ 4\\
+    = 204 training samples
+};
+
+\end{tikzpicture}

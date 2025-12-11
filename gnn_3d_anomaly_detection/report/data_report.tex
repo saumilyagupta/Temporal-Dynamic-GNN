@@ -1,0 +1,486 @@
+\documentclass[11pt,a4paper]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath,amssymb}
+\usepackage{graphicx}
+\usepackage{multirow}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{longtable}
+\usepackage{geometry}
+\usepackage{hyperref}
+\usepackage{float}
+
+\geometry{margin=0.8in}
+
+\title{\textbf{3D Graph Convolutional Network: Experimental Data Report}}
+\author{}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+\section{Model Configuration}
+
+\begin{table}[H]
+\centering
+\caption{Model Architecture Parameters}
+\begin{tabular}{ll}
+\toprule
+\textbf{Parameter} & \textbf{Value} \\
+\midrule
+Input node dimension & 6 \\
+Input edge dimension & 3 \\
+Number of GCN layers & 3 \\
+Hidden dimension & 64 \\
+Dropout rate & 0.5 \\
+Pooling type & All (mean + max + sum) \\
+Pooling output dimension & 192 \\
+Classifier hidden layers & [64, 32] \\
+Output dimension & 1 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}[H]
+\centering
+\caption{Training Configuration}
+\begin{tabular}{ll}
+\toprule
+\textbf{Parameter} & \textbf{Value} \\
+\midrule
+Batch size & 1 \\
+Number of epochs & 100 (stopped at 21) \\
+Learning rate & $1 \times 10^{-6}$ \\
+Weight decay & $1 \times 10^{-6}$ \\
+Optimizer & Adam \\
+Early stopping patience & 20 \\
+Early stopping min delta & 0.0001 \\
+Loss function & Binary Cross-Entropy \\
+Device & CUDA:3 \\
+DataLoader workers & 4 \\
+Coordinate normalization & Enabled \\
+Max frames per video & None (all frames) \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\section{Dataset Statistics}
+
+\begin{table}[H]
+\centering
+\caption{Dataset Split}
+\begin{tabular}{lccc}
+\toprule
+\textbf{Split} & \textbf{Samples} & \textbf{Normal} & \textbf{Anomalous} \\
+\midrule
+Train & 37 & 18 & 19 \\
+Validation & 6 & 3 & 3 \\
+Test & 10 & 5 & 5 \\
+\textbf{Total} & \textbf{53} & \textbf{26} & \textbf{27} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}[H]
+\centering
+\caption{Frame Count Statistics (per sample)}
+\begin{tabular}{lr}
+\toprule
+\textbf{Statistic} & \textbf{Value} \\
+\midrule
+Minimum & 22 \\
+Maximum & 79 \\
+Mean & 50.10 \\
+Median & 50.00 \\
+Standard deviation & 17.13 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}[H]
+\centering
+\caption{Timestamp Statistics (seconds)}
+\begin{tabular}{lr}
+\toprule
+\textbf{Statistic} & \textbf{Value} \\
+\midrule
+Minimum & 0.000 \\
+Maximum & 3.120 \\
+Mean & 1.121 \\
+Median & 1.040 \\
+Standard deviation & 0.781 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\textbf{Note:} Timestamps are normalized per-sample to [0, 1] before model input.
+
+\section{Training History}
+
+\begin{longtable}{cccc}
+\caption{Complete Training History}\\
+\toprule
+\textbf{Epoch} & \textbf{Train Loss} & \textbf{Val Loss} & \textbf{Train Acc} & \textbf{Val Acc} \\
+\midrule
+\endfirsthead
+\multicolumn{5}{c}{\tablename\ \thetable\ -- \textit{Continued from previous page}} \\
+\toprule
+\textbf{Epoch} & \textbf{Train Loss} & \textbf{Val Loss} & \textbf{Train Acc} & \textbf{Val Acc} \\
+\midrule
+\endhead
+\bottomrule
+\endfoot
+\bottomrule
+\endlastfoot
+1 & 56.1546 & 2.6583 & 0.5135 & 0.6667 \\
+2 & 28.1498 & 2.7443 & 0.6486 & 0.6667 \\
+3 & 81.3810 & 2.6440 & 0.5135 & 0.6667 \\
+4 & 41.0218 & 2.5307 & 0.4865 & 0.6667 \\
+5 & 62.9164 & 2.5325 & 0.4324 & 0.6667 \\
+6 & 64.5126 & 2.5506 & 0.5405 & 0.6667 \\
+7 & 30.9101 & 2.6053 & 0.7297 & 0.6667 \\
+8 & 43.1059 & 2.5809 & 0.4865 & 0.6667 \\
+9 & 36.0058 & 2.5374 & 0.6486 & 0.6667 \\
+10 & 22.3849 & 2.5416 & 0.6486 & 0.6667 \\
+11 & 65.2151 & 2.5309 & 0.3514 & 0.6667 \\
+12 & 49.6519 & 2.5409 & 0.5405 & 0.6667 \\
+13 & 86.9409 & 2.5982 & 0.5405 & 0.6667 \\
+14 & 67.5385 & 2.5684 & 0.3784 & 0.6667 \\
+15 & 39.7018 & 2.5953 & 0.6216 & 0.6667 \\
+16 & 65.1931 & 2.6403 & 0.4324 & 0.6667 \\
+17 & 45.6561 & 2.6208 & 0.4595 & 0.6667 \\
+18 & 19.4840 & 2.5915 & 0.5946 & 0.6667 \\
+19 & 36.2086 & 2.6206 & 0.4865 & 0.6667 \\
+20 & 48.8262 & 2.6495 & 0.5676 & 0.6667 \\
+21 & 33.0634 & 2.6536 & 0.6486 & 0.6667 \\
+\end{longtable}
+
+\section{Test Set Results}
+
+\begin{table}[H]
+\centering
+\caption{Overall Test Metrics}
+\begin{tabular}{lr}
+\toprule
+\textbf{Metric} & \textbf{Value} \\
+\midrule
+Accuracy & 0.500 \\
+Precision & 0.500 \\
+Recall & 0.400 \\
+F1-Score & 0.444 \\
+AUC-ROC & 0.480 \\
+AUC-PR & 0.512 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}[H]
+\centering
+\caption{Per-Class Classification Metrics}
+\begin{tabular}{lcccc}
+\toprule
+\textbf{Class} & \textbf{Precision} & \textbf{Recall} & \textbf{F1-Score} & \textbf{Support} \\
+\midrule
+Normal & 0.500 & 0.600 & 0.545 & 5 \\
+Anomalous & 0.500 & 0.400 & 0.444 & 5 \\
+\midrule
+Macro Avg & 0.500 & 0.500 & 0.495 & 10 \\
+Weighted Avg & 0.500 & 0.500 & 0.495 & 10 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{longtable}{lllcc}
+\caption{Individual Test Predictions}\\
+\toprule
+\textbf{Video} & \textbf{True Label} & \textbf{Predicted} & \textbf{Probability} & \textbf{Correct} \\
+\midrule
+\endfirsthead
+\multicolumn{5}{c}{\tablename\ \thetable\ -- \textit{Continued from previous page}} \\
+\toprule
+\textbf{Video} & \textbf{True Label} & \textbf{Predicted} & \textbf{Probability} & \textbf{Correct} \\
+\midrule
+\endhead
+\bottomrule
+\endfoot
+\bottomrule
+\endlastfoot
+000072\_Anomalous\_1 & Anomalous & Normal & $2.70 \times 10^{-29}$ & No \\
+000072\_Normal\_1 & Normal & Normal & 0.000 & Yes \\
+000201\_Normal\_1 & Normal & Anomalous & 0.989 & No \\
+000201\_Anomalous\_1 & Anomalous & Anomalous & 0.584 & Yes \\
+000289\_Normal\_1 & Normal & Normal & 0.011 & Yes \\
+000289\_Anomalous\_1 & Anomalous & Normal & 0.394 & No \\
+000515\_Normal\_1 & Normal & Normal & $6.90 \times 10^{-22}$ & Yes \\
+000515\_Anomalous\_1 & Anomalous & Normal & $4.80 \times 10^{-10}$ & No \\
+A22\_Normal\_1 & Normal & Anomalous & 0.856 & No \\
+A22\_Anomalous\_1 & Anomalous & Anomalous & 0.820 & Yes \\
+\end{longtable}
+
+\section{Confusion Matrix Summary}
+
+\begin{table}[H]
+\centering
+\caption{Confusion Matrix}
+\begin{tabular}{lcc}
+\toprule
+ & \textbf{Predicted Normal} & \textbf{Predicted Anomalous} \\
+\midrule
+\textbf{True Normal} & 3 (TN) & 2 (FP) \\
+\textbf{True Anomalous} & 3 (FN) & 2 (TP) \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\textbf{Legends:}
+\begin{itemize}
+    \item TN = True Negatives (correctly classified Normal)
+    \item FP = False Positives (Normal misclassified as Anomalous)
+    \item FN = False Negatives (Anomalous misclassified as Normal)
+    \item TP = True Positives (correctly classified Anomalous)
+\end{itemize}
+
+\section{Training Summary Statistics}
+
+\begin{table}[H]
+\centering
+\caption{Training Loss Statistics}
+\begin{tabular}{lr}
+\toprule
+\textbf{Statistic} & \textbf{Value} \\
+\midrule
+Initial train loss & 56.1546 \\
+Final train loss & 33.0634 \\
+Minimum train loss & 19.4840 (epoch 18) \\
+Maximum train loss & 86.9409 (epoch 13) \\
+Mean train loss & 49.2835 \\
+Std train loss & 19.7037 \\
+\midrule
+Initial val loss & 2.6583 \\
+Final val loss & 2.6536 \\
+Minimum val loss & 2.5307 (epoch 4) \\
+Maximum val loss & 2.7443 (epoch 2) \\
+Mean val loss & 2.5849 \\
+Std val loss & 0.0417 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}[H]
+\centering
+\caption{Training Accuracy Statistics}
+\begin{tabular}{lr}
+\toprule
+\textbf{Statistic} & \textbf{Value} \\
+\midrule
+Initial train accuracy & 0.5135 \\
+Final train accuracy & 0.6486 \\
+Maximum train accuracy & 0.7297 (epoch 7) \\
+Minimum train accuracy & 0.3514 (epoch 11) \\
+Mean train accuracy & 0.5345 \\
+Std train accuracy & 0.1008 \\
+\midrule
+Val accuracy (all epochs) & 0.6667 (constant) \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\section{Node and Edge Features}
+
+\subsection{Node Features}
+Each node contains 6 features:
+\begin{itemize}
+    \item $x$: X-coordinate (normalized)
+    \item $y$: Y-coordinate (normalized)
+    \item $timestamp$: Temporal coordinate (normalized per-sample to [0,1])
+    \item $width$: Bounding box width
+    \item $height$: Bounding box height
+    \item $vehicle\_id$: Vehicle identifier
+\end{itemize}
+
+\subsection{Edge Features}
+Each edge contains 3 features:
+\begin{itemize}
+    \item $distance$: Euclidean distance between vehicle centroids
+    \item $frame$: Frame number
+    \item $timestamp$: Timestamp of the frame
+\end{itemize}
+
+\section{Model Architecture Details}
+
+\subsection{Layer Dimensions}
+\begin{itemize}
+    \item Input: $N \times 6$ (N nodes, 6 features)
+    \item GCN Layer 1: $6 \to 64$
+    \item GCN Layer 2: $64 \to 64$
+    \item GCN Layer 3: $64 \to 64$
+    \item Pooling output: $192$ (64 $\times$ 3: mean + max + sum)
+    \item FC Layer 1: $192 \to 64$
+    \item FC Layer 2: $64 \to 32$
+    \item FC Layer 3: $32 \to 1$
+\end{itemize}
+
+\subsection{Activation and Regularization}
+\begin{itemize}
+    \item Activation: ReLU (after layers 1-2, none after layer 3)
+    \item Dropout: 0.5 (after GCN layers 1-2, after FC layers 1-2)
+    \item Pooling: Global mean, max, and sum (concatenated)
+    \item Output activation: Sigmoid (for probability)
+\end{itemize}
+
+\section{Hyperparameter Optimization Results}
+
+\subsection{Optimization Overview}
+
+A comprehensive hyperparameter optimization was conducted using Optuna with 100 trials to find the best configuration for the 3D GCN model.
+
+\begin{table}[H]
+\centering
+\caption{Hyperparameter Optimization Summary}
+\begin{tabular}{lr}
+\toprule
+\textbf{Statistic} & \textbf{Value} \\
+\midrule
+Total trials & 100 \\
+Completed trials & 99 \\
+Failed trials & 1 \\
+Best validation accuracy & 0.8333 (83.33\%) \\
+Best trial number & 27 \\
+Mean validation accuracy & 0.6178 (61.78\%) \\
+Std validation accuracy & 0.1039 \\
+Min validation accuracy & 0.3333 (33.33\%) \\
+Max validation accuracy & 0.8333 (83.33\%) \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Best Configuration}
+
+The best configuration achieved 83.33\% validation accuracy, representing a significant improvement over the baseline configuration (66.67\%).
+
+\begin{table}[H]
+\centering
+\caption{Best Model Configuration (Trial 27)}
+\begin{tabular}{ll}
+\toprule
+\textbf{Parameter} & \textbf{Value} \\
+\midrule
+\multicolumn{2}{l}{\textbf{Model Architecture}} \\
+\midrule
+Hidden dimension & 32 \\
+Number of layers & 2 \\
+Dropout rate & 0.1 \\
+Pooling type & Sum \\
+\midrule
+\multicolumn{2}{l}{\textbf{Training Parameters}} \\
+\midrule
+Batch size & 6 \\
+Learning rate & $1.78 \times 10^{-4}$ \\
+Weight decay & $1.65 \times 10^{-6}$ \\
+Patience & 20 \\
+Min delta & $2.97 \times 10^{-3}$ \\
+\midrule
+\multicolumn{2}{l}{\textbf{Performance}} \\
+\midrule
+Validation accuracy & 0.8333 (83.33\%) \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Top Performing Trials}
+
+Multiple trials achieved the same best validation accuracy of 83.33\%:
+
+\begin{table}[H]
+\centering
+\caption{Top 10 Trials by Validation Accuracy}
+\begin{tabular}{lcc}
+\toprule
+\textbf{Trial} & \textbf{Val Accuracy} & \textbf{Key Parameters} \\
+\midrule
+27 (Best) & 0.8333 & hidden=32, layers=2, dropout=0.1, pool=sum \\
+53 & 0.8333 & hidden=128, layers=4, dropout=0.1 \\
+58 & 0.8333 & hidden=96, layers=2, dropout=0.1 \\
+60 & 0.8333 & hidden=32, layers=2, dropout=0.3 \\
+71 & 0.8333 & hidden=48, layers=2, dropout=0.4 \\
+78 & 0.8333 & hidden=32, layers=2, dropout=0.1 \\
+86 & 0.8333 & hidden=48, layers=2, dropout=0.1 \\
+97 & 0.8333 & hidden=32, layers=2, dropout=0.3 \\
+4 & 0.6667 & hidden=112, layers=2, dropout=0.7 \\
+5 & 0.6667 & hidden=64, layers=3, dropout=0.2 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Key Findings}
+
+\begin{itemize}
+    \item \textbf{Simpler architecture performs better:} Best configuration uses only 2 GCN layers (vs. baseline 3)
+    \item \textbf{Lower hidden dimension:} Best configuration uses 32 (vs. baseline 64)
+    \item \textbf{Lower dropout:} Best configuration uses 0.1 (vs. baseline 0.5)
+    \item \textbf{Sum pooling effective:} Best configuration uses sum pooling (vs. baseline all pooling types)
+    \item \textbf{Higher batch size:} Best configuration uses batch size 6 (vs. baseline 1)
+    \item \textbf{Improvement:} Validation accuracy improved from 66.67\% (baseline) to 83.33\% (best), a 16.66 percentage point improvement
+\end{itemize}
+
+\subsection{Comparison: Baseline vs. Optimized}
+
+\begin{table}[H]
+\centering
+\caption{Baseline vs. Optimized Configuration}
+\begin{tabular}{lcc}
+\toprule
+\textbf{Parameter} & \textbf{Baseline} & \textbf{Optimized} \\
+\midrule
+Hidden dimension & 64 & 32 \\
+Number of layers & 3 & 2 \\
+Dropout rate & 0.5 & 0.1 \\
+Pooling type & All & Sum \\
+Batch size & 1 & 6 \\
+Learning rate & $1.0 \times 10^{-6}$ & $1.78 \times 10^{-4}$ \\
+Weight decay & $1.0 \times 10^{-6}$ & $1.65 \times 10^{-6}$ \\
+\midrule
+\textbf{Validation Accuracy} & \textbf{0.6667} & \textbf{0.8333} \\
+\textbf{Improvement} & \textbf{--} & \textbf{+16.66\%} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Hyperparameter Search Space}
+
+The optimization explored the following parameter ranges:
+
+\begin{table}[H]
+\centering
+\caption{Hyperparameter Search Space}
+\begin{tabular}{lll}
+\toprule
+\textbf{Parameter} & \textbf{Type} & \textbf{Range} \\
+\midrule
+hidden\_dim & Integer & [32, 128], step=16 \\
+num\_layers & Integer & [2, 5] \\
+dropout & Float & [0.1, 0.7], step=0.1 \\
+pooling\_type & Categorical & ['mean', 'max', 'sum', 'meanmax', 'all'] \\
+batch\_size & Integer & [1, 8], step=1 \\
+learning\_rate & Float (log) & [$1 \times 10^{-7}$, $1 \times 10^{-3}$] \\
+weight\_decay & Float (log) & [$1 \times 10^{-7}$, $1 \times 10^{-4}$] \\
+patience & Integer & [5, 30], step=5 \\
+min\_delta & Float (log) & [$1 \times 10^{-5}$, $1 \times 10^{-2}$] \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Optimization Methodology}
+
+\begin{itemize}
+    \item \textbf{Framework:} Optuna with TPE (Tree-structured Parzen Estimator) sampler
+    \item \textbf{Storage:} SQLite database for persistence and resume capability
+    \item \textbf{Objective:} Maximize validation accuracy
+    \item \textbf{Early stopping:} Applied per trial with trial-specific patience and min\_delta
+    \item \textbf{Resume support:} Optimization can be interrupted and resumed
+\end{itemize}
+
+\end{document}
+

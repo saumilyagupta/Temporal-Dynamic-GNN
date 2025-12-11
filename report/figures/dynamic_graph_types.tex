@@ -1,0 +1,98 @@
+% Dynamic Graph Types Diagram
+\begin{tikzpicture}[
+    node distance=0.6cm,
+    vertex/.style={
+        circle,
+        draw=black,
+        thick,
+        minimum size=0.5cm,
+        font=\tiny
+    },
+    present/.style={vertex, fill=green!40},
+    absent/.style={vertex, fill=gray!20, dashed},
+    arrow/.style={-Stealth, thick}
+]
+
+% Title
+\node[font=\bfseries] at (6, 5.5) {Dynamic Graph Representations};
+
+% ===== DTDG Section =====
+\node[font=\small\bfseries] at (2, 4.5) {(a) DTDG};
+
+% Time labels
+\node[font=\tiny] at (0.5, 3.5) {$t=1$};
+\node[font=\tiny] at (2.5, 3.5) {$t=2$};
+\node[font=\tiny] at (4.5, 3.5) {$t=3$};
+
+% Snapshot 1
+\node[present] (a1) at (0, 2.5) {};
+\node[present] (b1) at (1, 2.5) {};
+\node[present] (c1) at (0.5, 1.5) {};
+\draw[thick] (a1) -- (b1);
+\draw[thick] (a1) -- (c1);
+\draw[thick] (b1) -- (c1);
+
+% Snapshot 2
+\node[present] (a2) at (2, 2.5) {};
+\node[present] (b2) at (3, 2.5) {};
+\node[present] (c2) at (2.5, 1.5) {};
+\node[present] (d2) at (3, 1.5) {};
+\draw[thick] (a2) -- (b2);
+\draw[thick] (a2) -- (c2);
+\draw[thick] (b2) -- (d2);
+\draw[thick] (c2) -- (d2);
+
+% Snapshot 3
+\node[present] (a3) at (4, 2.5) {};
+\node[present] (b3) at (5, 2.5) {};
+\node[present] (d3) at (5, 1.5) {};
+\draw[thick] (a3) -- (b3);
+\draw[thick] (b3) -- (d3);
+
+% Arrows between snapshots
+\draw[arrow, gray, dashed] (1.2, 2) -- (1.8, 2);
+\draw[arrow, gray, dashed] (3.2, 2) -- (3.8, 2);
+
+% DTDG equation
+\node[font=\small] at (2.5, 0.5) {$\mathcal{G} = [G^{(1)}, G^{(2)}, \ldots, G^{(T)}]$};
+
+% ===== CTDG Section =====
+\node[font=\small\bfseries] at (9.5, 4.5) {(b) CTDG};
+
+% Timeline
+\draw[thick, ->] (7, 2) -- (12, 2);
+\node[font=\tiny] at (12, 1.7) {time};
+
+% Events
+\fill[blue!60] (7.5, 2) circle (3pt);
+\node[font=\tiny, above] at (7.5, 2.2) {$e_1$};
+\node[font=\tiny, below] at (7.5, 1.7) {$t_1$};
+
+\fill[red!60] (8.5, 2) circle (3pt);
+\node[font=\tiny, above] at (8.5, 2.2) {$e_2$};
+\node[font=\tiny, below] at (8.5, 1.7) {$t_2$};
+
+\fill[green!60] (9.5, 2) circle (3pt);
+\node[font=\tiny, above] at (9.5, 2.2) {$e_3$};
+\node[font=\tiny, below] at (9.5, 1.7) {$t_3$};
+
+\fill[orange!60] (10.5, 2) circle (3pt);
+\node[font=\tiny, above] at (10.5, 2.2) {$e_4$};
+\node[font=\tiny, below] at (10.5, 1.7) {$t_4$};
+
+\fill[purple!60] (11.5, 2) circle (3pt);
+\node[font=\tiny, above] at (11.5, 2.2) {$e_5$};
+\node[font=\tiny, below] at (11.5, 1.7) {$t_5$};
+
+% Event descriptions
+\node[font=\tiny, align=left] at (9.5, 3.3) {Events: $(u, v, t, e)$};
+
+% CTDG equation
+\node[font=\small] at (9.5, 0.5) {$\mathcal{G} = \{(u_i, v_i, t_i, e_i)\}_{i=1}^{N}$};
+
+% Comparison note
+\node[font=\tiny, align=center, fill=yellow!20, rounded corners] at (6, -0.5) {
+    Our approach uses \textbf{DTDG} with frames as snapshots
+};
+
+\end{tikzpicture}

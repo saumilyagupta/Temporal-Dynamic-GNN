@@ -1,0 +1,74 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Chapter 1: Introduction
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\chapter{Introduction}
+\label{ch:introduction}
+
+\section{Research Problem}
+
+Video Anomaly Detection in traffic surveillance plays a vital role in intelligent transportation systems, enabling automated identification of accidents, dangerous driving practices, and other safety-critical events. The traditional method of this problem involves frame-by-frame analysis using convolutional neural networks (CNNs), which do not always take into consideration the complicated spatial relationships between vehicles and their development in relation to passage of time.
+
+Graph Neural Networks (GNNs) offer a promising alternative by modeling vehicle interactions as graphs, where:
+\begin{itemize}
+    \item \textbf{Nodes} represent individual vehicles detected in each frame
+    \item \textbf{Edges} encode spatial relations between cars in terms of Euclidean distances
+    \item \textbf{Node features} encode vehicle properties (centroid, bounding box, class, timestamp)
+    \item \textbf{Graph structure} preserves interaction topology which can possibly show anomalies
+\end{itemize}
+
+This work proposes a \textbf{Temporal Graph Neural Network (Temporal DGNN)}, which involves spatial processing of per-frame graphs using spatial GCN layers, followed by temporal processing using a GRU model. A 30-frame video can be broken down into a set of 30 dynamic graphs, with every frame generating a graph consisting solely of the vehicles that appear in a particular frame---no padding, no constant-size matrices, no missing value management required.
+
+\section{Dataset: NiAD\_large\_graphs}
+
+Our experiments are done using the \textbf{NiAD\_large\_graphs} dataset, which has been obtained from the NiAD (Night-time Accident Detection) dataset and processed using a customized node-feature data pipeline. The pipeline converts 30-frame video sequences into PyTorch Geometric graph objects stored as \texttt{.pt} files.
+
+\begin{table}[H]
+\centering
+\caption{NiAD\_large\_graphs Dataset Statistics}
+\label{tab:dataset_stats}
+\begin{tabular}{lccccc}
+\toprule
+\textbf{Split} & \textbf{Total} & \textbf{Normal} & \textbf{Anomalous} & \textbf{Frames} & \textbf{Augmented} \\
+\midrule
+Training & 842 & 638 & 204 & 30 (fixed) & Yes (Anomalous only) \\
+Validation & 128 & 112 & 16 & 30 (fixed) & No \\
+Test & 206 & 184 & 22 & 30 (fixed) & No \\
+\midrule
+\textbf{Total} & \textbf{1,176} & \textbf{934} & \textbf{242} & -- & -- \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Data augmentation (brightness, flip, spatial shift) is applied only to anomalous training samples, resulting in 4$\times$ augmentation (51 $\times$ 4 = 204 videos). The test set has 8.4:1 Normal:Anomalous ratio, motivating Focal Loss usage.
+
+\section{Research Contributions}
+
+This work adds: (1) A pipeline from video to graph sequences with node features, using detection from YOLOv8 and graph representation from PyG, (2) A Temporal DGNN model with spatial GCN layers and GRU temporal modeling, (3) Clean dynamic graph representation without padding or sentinel values, (4) Class imbalance techniques for data augmentation with Focal Loss, and (5) Comprehensive experimental evaluation achieving 89.32\% accuracy with AUC-ROC of 0.81.
+
+\section{Report Organization}
+
+This report is organized as follows:
+
+\begin{description}
+    \item[Chapter 2: Mathematical Background] Describes the mathematical bases for Graph Neural Networks, including graph representation, message passing, GCN formulation, and concepts of temporal modeling.
+    
+    \item[Chapter 3: Data Pipeline] Describes how data moves from a raw video feed through graph representation, including vehicle detection and tracking, graph creation, and the PyTorch Geometric data format.
+    
+    \item[Chapter 4: Temporal DGNN Model] Description of the model structure involves spatial GCN layers, GRU temporal modeling, Focal Loss function, and training setup.
+    
+    \item[Chapter 5: Experiments and Results] Discusses experiments and their results in a comprehensive manner.
+    
+    \item[Chapter 6: Conclusion] Summarizes findings and discusses future research directions.
+\end{description}
+
+\section{System Architecture Overview}
+
+Figure~\ref{fig:system_architecture} provides a high-level overview of the complete research system, from input videos to anomaly predictions.
+
+\begin{figure}[H]
+    \centering
+    \input{figures/system_architecture}
+    \caption{End-to-end system architecture for Temporal DGNN-based video anomaly detection. The pipeline processes surveillance videos through vehicle detection, tracking, and graph construction stages, producing 30 PyG graph files per video that are fed to the Temporal DGNN model for binary classification.}
+    \label{fig:system_architecture}
+\end{figure}

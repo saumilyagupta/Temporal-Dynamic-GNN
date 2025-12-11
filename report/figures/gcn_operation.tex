@@ -1,0 +1,71 @@
+% GCN Operation Diagram
+\begin{tikzpicture}[
+    node distance=1.2cm,
+    box/.style={
+        rectangle,
+        rounded corners=3pt,
+        minimum width=1.6cm,
+        minimum height=1.4cm,
+        align=center,
+        draw=black,
+        thick,
+        font=\small
+    },
+    opbox/.style={
+        rectangle,
+        rounded corners=2pt,
+        minimum width=0.8cm,
+        minimum height=0.6cm,
+        align=center,
+        draw=black,
+        fill=yellow!30,
+        font=\small
+    },
+    arrow/.style={-Stealth, thick}
+]
+
+% Title
+\node[font=\bfseries] at (7, 4.5) {Graph Convolution Operation};
+
+% Input features Z^(l-1)
+\node[box, fill=cyan!20] (X) at (0, 2) {$\mat{Z}^{(l-1)}$};
+\node[font=\scriptsize] at (0, 0.8) {$[n \times d_{in}]$};
+
+% Adjacency A_hat
+\node[box, fill=green!20] (A) at (3, 2) {$\hat{\mat{A}}$};
+\node[font=\scriptsize] at (3, 0.8) {$[n \times n]$};
+
+% Weight matrix W
+\node[box, fill=orange!20] (W) at (6, 2) {$\mat{W}^{(l)}$};
+\node[font=\scriptsize] at (6, 0.8) {$[d_{in} \times d_{out}]$};
+
+% Output Z^(l)
+\node[box, fill=red!20] (Z) at (12, 2) {$\mat{Z}^{(l)}$};
+\node[font=\scriptsize] at (12, 0.8) {$[n \times d_{out}]$};
+
+% Operators
+\node[opbox] (mult1) at (1.5, 2) {$\times$};
+\node[opbox] (mult2) at (4.5, 2) {$\times$};
+\node[opbox, fill=purple!25] (sigma) at (9, 2) {$\sigma(\cdot)$};
+
+% Arrows
+\draw[arrow] (X) -- (mult1);
+\draw[arrow] (A) -- (mult1);
+\draw[arrow] (mult1) -- (A);
+\draw[arrow] (A) -- (mult2);
+\draw[arrow] (W) -- (mult2);
+\draw[arrow] (mult2) -- (sigma);
+\draw[arrow] (sigma) -- (Z);
+
+% Intermediate labels
+\node[font=\scriptsize, fill=white] at (4.5, 3.2) {$\hat{\mat{A}}\mat{Z}^{(l-1)}\mat{W}^{(l)}$};
+
+% Equation
+\node[font=\normalsize, align=center] at (6, -0.8) {
+    $\mat{Z}^{(l)} = \sigma\left(\hat{\mat{A}} \mat{Z}^{(l-1)} \mat{W}^{(l)}\right)$
+};
+\node[font=\small] at (6, -1.6) {
+    where $\hat{\mat{A}} = \tilde{\mat{D}}^{-\frac{1}{2}} \tilde{\mat{A}} \tilde{\mat{D}}^{-\frac{1}{2}}$
+};
+
+\end{tikzpicture}

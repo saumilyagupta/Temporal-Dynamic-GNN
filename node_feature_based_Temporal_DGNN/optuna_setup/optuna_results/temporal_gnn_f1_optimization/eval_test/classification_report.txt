@@ -1,0 +1,11 @@
+Classification Report (test set)
+================================
+              precision    recall  f1-score   support
+
+Normal            0.89      1.00      0.94       184
+Anomalous         0.00      0.00      0.00        22
+
+accuracy                          0.89       206
+macro avg         0.45      0.50      0.47       206
+weighted avg      0.80      0.89      0.84       206
+

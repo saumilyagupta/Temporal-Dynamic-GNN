@@ -1,0 +1,301 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Chapter 2: Mathematical Background
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\chapter{Mathematical Background}
+\label{ch:background}
+
+This chapter presents the mathematical foundations of Graph Neural Networks required for understanding the models used in this research. We follow the notation and formulations from established literature \cite{kipf2017, kazemi2020, scarselli2008}.
+
+\section{Graph Representation}
+
+\subsection{Basic Definitions}
+
+An \textbf{attributed graph} is represented as a tuple $G = (V, \mat{A}, \mat{X})$ where:
+
+\begin{itemize}
+    \item $V = \{v_1, v_2, \ldots, v_n\}$ is the set of vertices (nodes)
+    \item $n = |V|$ denotes the number of nodes
+    \item $\mat{A} \in \R^{n \times n}$ is the adjacency matrix
+    \item $\mat{X} \in \R^{n \times d}$ is the feature matrix where $\mat{X}_i$ represents the $d$-dimensional features of node $v_i$
+\end{itemize}
+
+The adjacency matrix $\mat{A}$ encodes the graph structure:
+\begin{equation}
+    \mat{A}_{i,j} = \begin{cases}
+        w_{ij} & \text{if there exists an edge between } v_i \text{ and } v_j \\
+        0 & \text{otherwise}
+    \end{cases}
+\end{equation}
+
+where $w_{ij} \in \R_+$ represents the edge weight.
+
+\subsection{Graph Properties}
+
+\textbf{Undirected graphs:} The adjacency matrix is symmetric, i.e., $\mat{A} = \mat{A}^\top$.
+
+\textbf{Weighted graphs:} Edge weights can represent various properties such as:
+\begin{itemize}
+    \item \textbf{Distance:} Euclidean distance between nodes (as in our vehicle graphs)
+    \item \textbf{Similarity:} Cosine similarity between node features
+    \item \textbf{Connection strength:} Normalized affinity scores
+\end{itemize}
+
+In our application, each frame produces an \textbf{undirected weighted graph} where edge weights represent Euclidean distances between vehicle centroids.
+
+\section{Message Passing Framework}
+
+Graph Neural Networks operate through a \textbf{message passing} paradigm where node representations are iteratively updated by aggregating information from neighboring nodes.
+
+\subsection{General Message Passing}
+
+The general message passing framework consists of three operations at each layer $l$:
+
+\begin{enumerate}
+    \item \textbf{Message computation:} For each edge $(i, j)$, compute a message:
+    \begin{equation}
+        \vect{m}_{ij}^{(l)} = \phi^{(l)}\left(\vect{h}_i^{(l-1)}, \vect{h}_j^{(l-1)}, e_{ij}\right)
+    \end{equation}
+    
+    \item \textbf{Aggregation:} Aggregate messages from all neighbors:
+    \begin{equation}
+        \vect{a}_i^{(l)} = \bigoplus_{j \in \mathcal{N}(i)} \vect{m}_{ij}^{(l)}
+    \end{equation}
+    where $\mathcal{N}(i)$ denotes the neighborhood of node $i$ and $\bigoplus$ is a permutation-invariant aggregation function (e.g., sum, mean, max).
+    
+    \item \textbf{Update:} Update node representation:
+    \begin{equation}
+        \vect{h}_i^{(l)} = \psi^{(l)}\left(\vect{h}_i^{(l-1)}, \vect{a}_i^{(l)}\right)
+    \end{equation}
+\end{enumerate}
+
+Figure~\ref{fig:message_passing} illustrates the message passing process.
+
+\begin{figure}[H]
+    \centering
+    \input{figures/message_passing}
+    \caption{Message passing in Graph Neural Networks. Each node aggregates features from its neighbors to update its representation.}
+    \label{fig:message_passing}
+\end{figure}
+
+\section{Graph Convolutional Networks (GCN)}
+
+The Graph Convolutional Network (GCN) \cite{kipf2017} is a specific instantiation of the message passing framework that has proven highly effective for graph-structured data.
+
+\subsection{GCN Layer Formulation}
+
+A single GCN layer transforms node features as follows:
+
+\begin{equation}
+\boxed{
+    \mat{Z}^{(l)} = \sigma\left(\tilde{\mat{D}}^{-\frac{1}{2}} \tilde{\mat{A}} \tilde{\mat{D}}^{-\frac{1}{2}} \mat{Z}^{(l-1)} \mat{W}^{(l)}\right)
+}
+\label{eq:gcn_layer}
+\end{equation}
+
+where:
+\begin{itemize}
+    \item $\tilde{\mat{A}} = \mat{A} + \mat{I}_n$ is the adjacency matrix with added self-loops
+    \item $\tilde{\mat{D}}$ is the degree matrix of $\tilde{\mat{A}}$ with $\tilde{\mat{D}}_{ii} = \sum_j \tilde{\mat{A}}_{ij}$
+    \item $\mat{W}^{(l)} \in \R^{d_{l-1} \times d_l}$ is the learnable weight matrix for layer $l$
+    \item $\sigma(\cdot)$ is a non-linear activation function (typically ReLU)
+    \item $\mat{Z}^{(l-1)} \in \R^{n \times d_{l-1}}$ are the input node features
+    \item $\mat{Z}^{(l)} \in \R^{n \times d_l}$ are the output node features
+\end{itemize}
+
+\subsection{Normalized Adjacency Matrix}
+
+The symmetric normalization $\hat{\mat{A}} = \tilde{\mat{D}}^{-\frac{1}{2}} \tilde{\mat{A}} \tilde{\mat{D}}^{-\frac{1}{2}}$ ensures:
+
+\begin{enumerate}
+    \item \textbf{Eigenvalue bounds:} Eigenvalues are bounded in $[-1, 1]$
+    \item \textbf{Numerical stability:} Prevents exploding/vanishing gradients
+    \item \textbf{Scale invariance:} Feature aggregation is invariant to node degree
+\end{enumerate}
+
+The element-wise formula for the normalized adjacency is:
+\begin{equation}
+    \hat{\mat{A}}_{ij} = \frac{\tilde{\mat{A}}_{ij}}{\sqrt{\tilde{\mat{D}}_{ii}} \cdot \sqrt{\tilde{\mat{D}}_{jj}}}
+\end{equation}
+
+\subsection{Per-Node GCN Update}
+
+For a single node $v_i$, the GCN update can be written as:
+\begin{equation}
+    \vect{h}_i^{(l)} = \sigma\left(\mat{W}^{(l)} \cdot \sum_{j \in \mathcal{N}(i) \cup \{i\}} \frac{1}{\sqrt{d_i + 1} \cdot \sqrt{d_j + 1}} \vect{h}_j^{(l-1)}\right)
+\end{equation}
+
+where $d_i$ and $d_j$ are the degrees of nodes $i$ and $j$ respectively.
+
+Figure~\ref{fig:gcn_operation} illustrates the GCN convolution operation.
+
+\begin{figure}[H]
+    \centering
+    \input{figures/gcn_operation}
+    \caption{Graph Convolution operation. Node features are aggregated from neighbors with degree-normalized weights, then transformed through a learnable weight matrix.}
+    \label{fig:gcn_operation}
+\end{figure}
+
+\section{Dynamic Graph Neural Networks}
+
+Dynamic graphs extend static graphs by incorporating temporal evolution. Following \cite{kazemi2020}, we distinguish two types of dynamic graphs.
+
+\subsection{Discrete-Time Dynamic Graphs (DTDG)}
+
+A DTDG represents the graph as a sequence of snapshots:
+\begin{equation}
+    \mathcal{G} = \left[G^{(1)}, G^{(2)}, \ldots, G^{(T)}\right]
+\end{equation}
+
+where each $G^{(t)} = (V^{(t)}, \mat{A}^{(t)}, \mat{X}^{(t)})$ is a graph at time step $t$.
+
+\textbf{Properties of DTDGs:}
+\begin{itemize}
+    \item Nodes may appear or disappear across time steps
+    \item Edge structure may change between snapshots
+    \item Node features may evolve over time
+\end{itemize}
+
+Our video anomaly detection problem naturally forms a DTDG where each frame corresponds to a time step.
+
+\subsection{Continuous-Time Dynamic Graphs (CTDG)}
+
+A CTDG represents the graph as a stream of timestamped events:
+\begin{equation}
+    \mathcal{G} = \{(u_i, v_i, t_i, \vect{e}_i)\}_{i=1}^{N}
+\end{equation}
+
+where each event represents an interaction between nodes $u_i$ and $v_i$ at time $t_i$ with optional features $\vect{e}_i$.
+
+Figure~\ref{fig:dynamic_graph_types} illustrates both dynamic graph representations.
+
+\begin{figure}[H]
+    \centering
+    \input{figures/dynamic_graph_types}
+    \caption{Dynamic graph representations: (a) Discrete-Time Dynamic Graph (DTDG) as a sequence of snapshots, (b) Continuous-Time Dynamic Graph (CTDG) as a stream of events.}
+    \label{fig:dynamic_graph_types}
+\end{figure}
+
+\section{Temporal Modeling with Recurrent Networks}
+
+For processing temporal sequences of graph embeddings, we employ recurrent neural networks, specifically Gated Recurrent Units (GRU) \cite{cho2014}.
+
+\subsection{GRU Formulation}
+
+The GRU updates hidden states using gating mechanisms:
+
+\begin{align}
+    \vect{z}_t &= \sigma\left(\mat{W}_z \vect{x}_t + \mat{U}_z \vect{h}_{t-1} + \vect{b}_z\right) & \text{(Update gate)} \\
+    \vect{r}_t &= \sigma\left(\mat{W}_r \vect{x}_t + \mat{U}_r \vect{h}_{t-1} + \vect{b}_r\right) & \text{(Reset gate)} \\
+    \tilde{\vect{h}}_t &= \tanh\left(\mat{W}_h \vect{x}_t + \mat{U}_h (\vect{r}_t \odot \vect{h}_{t-1}) + \vect{b}_h\right) & \text{(Candidate)} \\
+    \vect{h}_t &= (1 - \vect{z}_t) \odot \vect{h}_{t-1} + \vect{z}_t \odot \tilde{\vect{h}}_t & \text{(Output)}
+\end{align}
+
+where $\odot$ denotes element-wise multiplication.
+
+\subsection{Combining GCN with GRU}
+
+For dynamic graphs, we combine spatial (GCN) and temporal (GRU) processing:
+
+\begin{enumerate}
+    \item \textbf{Spatial encoding:} Apply GCN layers to each snapshot $G^{(t)}$:
+    \begin{equation}
+        \mat{H}^{(t)} = \text{GCN}\left(G^{(t)}\right) \in \R^{n \times d}
+    \end{equation}
+    
+    \item \textbf{Graph-level pooling:} Aggregate node features to graph-level:
+    \begin{equation}
+        \vect{g}^{(t)} = \text{POOL}\left(\mat{H}^{(t)}\right) \in \R^{d}
+    \end{equation}
+    
+    \item \textbf{Temporal encoding:} Process sequence with GRU:
+    \begin{equation}
+        \vect{o} = \text{GRU}\left(\left[\vect{g}^{(1)}, \vect{g}^{(2)}, \ldots, \vect{g}^{(T)}\right]\right)
+    \end{equation}
+\end{enumerate}
+
+\section{Graph Pooling Operations}
+
+Graph pooling aggregates node features: Mean Pool $\vect{g} = \frac{1}{|V|} \sum_{v \in V} \vect{h}_v$, Max Pool $\vect{g} = \max_{v \in V} \vect{h}_v$, or Sum Pool $\vect{g} = \sum_{v \in V} \vect{h}_v$. Our model uses mean pooling.
+
+\section{Focal Loss for Class Imbalance}
+
+For handling class imbalance in binary classification, we employ Focal Loss \cite{lin2017}.
+
+\subsection{Focal Loss Formulation}
+
+The Focal Loss is defined as:
+\begin{equation}
+\boxed{
+    \text{FL}(p_t) = -\alpha_t (1 - p_t)^\gamma \log(p_t)
+}
+\label{eq:focal_loss}
+\end{equation}
+
+where:
+\begin{itemize}
+    \item $p_t$ is the predicted probability for the true class
+    \item $\gamma \geq 0$ is the focusing parameter
+    \item $\alpha_t \in [0, 1]$ is the class balancing factor
+\end{itemize}
+
+\subsection{Class Balancing Factor}
+
+The balancing factor $\alpha$ is computed from the training set distribution:
+\begin{equation}
+    \alpha = \frac{N_{\text{normal}}}{N_{\text{normal}} + N_{\text{anomalous}}}
+\end{equation}
+
+For a sample with label $y$:
+\begin{equation}
+    \alpha_t = \begin{cases}
+        \alpha & \text{if } y = 0 \text{ (Normal)} \\
+        1 - \alpha & \text{if } y = 1 \text{ (Anomalous)}
+    \end{cases}
+\end{equation}
+
+\subsection{Focusing Effect}
+
+The modulating factor $(1 - p_t)^\gamma$ has the following properties:
+\begin{itemize}
+    \item When $p_t \to 1$ (well-classified): $(1 - p_t)^\gamma \to 0$, reducing loss contribution
+    \item When $p_t \to 0$ (misclassified): $(1 - p_t)^\gamma \to 1$, maintaining full loss
+\end{itemize}
+
+This causes the model to focus on hard-to-classify examples while down-weighting easy examples.
+
+\section{Summary of Mathematical Notation}
+
+Table~\ref{tab:notation} summarizes the mathematical notation used throughout this report.
+
+\begin{table}[H]
+\centering
+\caption{Summary of Mathematical Notation}
+\label{tab:notation}
+\begin{tabular}{cl}
+\toprule
+\textbf{Symbol} & \textbf{Description} \\
+\midrule
+$G = (V, \mat{A}, \mat{X})$ & Attributed graph \\
+$V$ & Set of vertices (nodes) \\
+$n = |V|$ & Number of nodes \\
+$\mat{A} \in \R^{n \times n}$ & Adjacency matrix \\
+$\mat{X} \in \R^{n \times d}$ & Node feature matrix \\
+$\mat{W}^{(l)}$ & Weight matrix for layer $l$ \\
+$\mat{Z}^{(l)}$ & Node embeddings at layer $l$ \\
+$\vect{h}_i$ & Feature vector of node $i$ \\
+$\mathcal{N}(i)$ & Neighborhood of node $i$ \\
+$\tilde{\mat{A}}$ & Adjacency with self-loops ($\mat{A} + \mat{I}$) \\
+$\tilde{\mat{D}}$ & Degree matrix of $\tilde{\mat{A}}$ \\
+$\sigma(\cdot)$ & Activation function \\
+$\odot$ & Element-wise (Hadamard) product \\
+$T$ & Number of time steps \\
+$\gamma$ & Focal loss focusing parameter \\
+$\alpha$ & Focal loss balancing factor \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+
+
+

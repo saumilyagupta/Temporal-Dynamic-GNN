@@ -1,0 +1,204 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Chapter 3: Data Pipeline
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\chapter{Data Pipeline}
+\label{ch:data_pipeline}
+
+This chapter details the node-feature-based data processing pipeline that converts raw surveillance videos into dynamic graph sequences suitable for the Temporal DGNN model. The pipeline is implemented in Python and leverages YOLOv8 for vehicle detection and PyTorch Geometric for graph representation.
+
+\section{Pipeline Overview}
+
+The data pipeline consists of five main stages:
+
+\begin{enumerate}
+    \item \textbf{Video Discovery:} Scan input directory for video files organized by split and class
+    \item \textbf{Vehicle Detection:} Apply YOLOv8 to detect vehicles in each frame
+    \item \textbf{Vehicle Tracking:} Assign consistent IDs to vehicles across frames
+    \item \textbf{Graph Construction:} Build per-frame PyG graphs with dynamic node counts
+    \item \textbf{Data Storage:} Save graphs as \texttt{.pt} files (30 per video) with CSV manifests
+\end{enumerate}
+
+Figure~\ref{fig:pipeline_flow} illustrates the complete pipeline flow.
+
+\begin{figure}[H]
+    \centering
+    \input{figures/pipeline_flow}
+    \caption{Data pipeline flowchart showing the transformation from raw video to PyTorch Geometric graph sequence.}
+    \label{fig:pipeline_flow}
+\end{figure}
+
+\section{Video Processing}
+
+Videos are organized by split (Training/Validation/Testing) and class (Normal/Accident). Each video is processed to extract exactly 30 frames using YOLOv8 with confidence threshold 0.3 for vehicle classes 2, 3, 5, 7 (car, motorcycle, bus, truck).
+
+\section{Vehicle Detection}
+
+\subsection{YOLO Configuration}
+
+We use YOLOv8 (nano variant) for efficient vehicle detection:
+
+\begin{table}[H]
+\centering
+\caption{YOLO Detection Configuration}
+\label{tab:yolo_config}
+\begin{tabular}{ll}
+\toprule
+\textbf{Parameter} & \textbf{Value} \\
+\midrule
+Model & YOLOv8n (nano) \\
+Confidence Threshold & 0.3 \\
+Vehicle Classes & 2 (car), 3 (motorcycle), 5 (bus), 7 (truck) \\
+Device & CUDA GPU \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+YOLO outputs bounding boxes, centroids, class IDs, and confidence scores for each detected vehicle.
+
+
+\section{Vehicle Tracking}
+
+Centroid-based tracking maintains consistent vehicle IDs across frames using distance matching (max\_distance=100 pixels, max\_disappeared=10 frames). The Hungarian algorithm matches detections to existing tracks.
+
+
+\section{Graph Construction}
+
+\subsection{Dynamic Graph Representation}
+
+Unlike fixed-size matrix approaches, each frame produces a graph containing \textbf{only the vehicles present in that frame}. This eliminates padding and missing value handling:
+
+\begin{itemize}
+    \item \textbf{Node Features:} $\mat{X}_t \in \R^{N_t \times 8}$ where $N_t$ is the number of vehicles in frame $t$
+    \item \textbf{Edge Index:} Sparse representation of fully-connected graph
+    \item \textbf{Edge Weight:} Euclidean distance between centroids
+    \item \textbf{Node IDs:} Tracking IDs for temporal consistency
+\end{itemize}
+
+\subsection{Node Features (8 dimensions)}
+
+Each node (vehicle) has 8 features:
+
+\begin{table}[H]
+\centering
+\caption{Node Feature Specification}
+\label{tab:node_features}
+\begin{tabular}{clll}
+\toprule
+\textbf{Index} & \textbf{Feature} & \textbf{Description} & \textbf{Range} \\
+\midrule
+0 & centroid\_x & X-coordinate of bounding box center & $[0, \text{width}]$ \\
+1 & centroid\_y & Y-coordinate of bounding box center & $[0, \text{height}]$ \\
+2 & bbox\_x & Top-left X coordinate & $[0, \text{width}]$ \\
+3 & bbox\_y & Top-left Y coordinate & $[0, \text{height}]$ \\
+4 & bbox\_w & Bounding box width & $[0, \text{width}]$ \\
+5 & bbox\_h & Bounding box height & $[0, \text{height}]$ \\
+6 & class\_id & YOLO class ID & $\{2, 3, 5, 7\}$ \\
+7 & timestamp & Normalized time: frame\_index / 29 & $[0, 1]$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+
+
+\subsection{Edge Construction}
+
+Edges connect all pairs of vehicles in each frame with weights based on Euclidean distance:
+
+\begin{equation}
+    \text{edge\_weight}_{ij} = \|\vect{c}_i - \vect{c}_j\|_2 = \sqrt{(c_{x,i} - c_{x,j})^2 + (c_{y,i} - c_{y,j})^2}
+\end{equation}
+
+For a frame with $N_t$ nodes, the fully connected graph has $N_t \times (N_t - 1)$ directed edges.
+
+Figure~\ref{fig:graph_construction} illustrates the graph construction process.
+
+\begin{figure}[H]
+    \centering
+    \input{figures/graph_construction}
+    \caption{Graph construction from vehicle detections. Nodes represent present vehicles only, edges represent spatial distances.}
+    \label{fig:graph_construction}
+\end{figure}
+
+
+\section{PyTorch Geometric Data Format}
+
+Each frame graph is stored as a PyTorch Geometric \texttt{Data} object with fields: \texttt{x} (node features [N, 8]), \texttt{edge\_index} ([2, E]), \texttt{edge\_weight} ([E]), \texttt{node\_ids} ([N]), and \texttt{t} (frame index).
+
+Each video produces 30 \texttt{.pt} files organized by split and class. CSV manifests track video metadata (path, label, vehicle counts).
+
+Figure~\ref{fig:hdf5_structure} illustrates the file structure.
+
+\begin{figure}[H]
+    \centering
+    \input{figures/hdf5_structure}
+    \caption{PyTorch Geometric file structure. Each frame produces a separate \texttt{.pt} file containing the graph data object.}
+    \label{fig:hdf5_structure}
+\end{figure}
+
+Graph sequences are loaded by iterating through 30 \texttt{.pt} files per video. The \texttt{node\_ids} field enables temporal alignment by sorting nodes by tracking IDs before processing.
+
+\section{Data Augmentation}
+
+Data augmentation is applied \textbf{only to anomalous training samples} to address class imbalance.
+
+\subsection{Augmentation Strategies}
+
+\begin{enumerate}
+    \item \textbf{Original:} Unmodified video (no suffix)
+    \item \textbf{Brightness:} Adjusted lighting conditions (suffix: \texttt{\_bright})
+    \item \textbf{Horizontal Flip:} Mirror transformation (suffix: \texttt{\_flip})
+    \item \textbf{Spatial Shift:} Left-shifted frames (suffix: \texttt{\_shift\_left})
+\end{enumerate}
+
+\subsection{Augmentation Statistics}
+
+\begin{table}[H]
+\centering
+\caption{Training Set Augmentation Breakdown}
+\label{tab:augmentation_stats}
+\begin{tabular}{lccc}
+\toprule
+\textbf{Class} & \textbf{Original} & \textbf{Augmented} & \textbf{Total} \\
+\midrule
+Normal & 638 & 0 & 638 \\
+Anomalous & 51 & 153 (3 variants each) & 204 \\
+\midrule
+\textbf{Total} & \textbf{689} & \textbf{153} & \textbf{842} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Figure~\ref{fig:data_augmentation} visualizes the augmentation strategies.
+
+\begin{figure}[H]
+    \centering
+    \input{figures/data_augmentation}
+    \caption{Data augmentation strategies applied to anomalous training videos. Each original video generates 4 variants (including original) for class balancing.}
+    \label{fig:data_augmentation}
+\end{figure}
+
+
+\section{Pipeline Summary}
+
+\begin{table}[H]
+\centering
+\caption{Pipeline Processing Summary}
+\label{tab:pipeline_summary}
+\begin{tabular}{ll}
+\toprule
+\textbf{Metric} & \textbf{Value} \\
+\midrule
+Total videos processed & 1,176 \\
+Training videos & 842 (638 Normal + 204 Anomalous) \\
+Validation videos & 128 \\
+Test videos & 206 \\
+Frames per video & 30 (fixed) \\
+Node features per vehicle & 8 \\
+Vehicle classes detected & 4 (car, motorcycle, bus, truck) \\
+YOLO confidence threshold & 0.3 \\
+Storage format & PyTorch Geometric \texttt{.pt} files \\
+Graph type & Fully connected (per frame) \\
+\bottomrule
+\end{tabular}
+\end{table}

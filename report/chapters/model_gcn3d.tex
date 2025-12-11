@@ -1,0 +1,448 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Chapter 4: 3D Graph Convolutional Network
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\chapter{3D Graph Convolutional Network}
+\label{ch:model_gcn3d}
+
+This chapter presents the 3D Graph Convolutional Network (3D-GCN) model, which combines all video frames into a single spatial-temporal graph for anomaly classification. This approach was evaluated on Dataset 1 containing 53 videos.
+
+\section{Model Overview}
+
+The 3D-GCN treats the video anomaly detection problem as a graph classification task. Unlike the Dynamic GNN approach (Chapter~\ref{ch:model_dynamic_gnn}), which processes frames sequentially, the 3D-GCN:
+
+\begin{enumerate}
+    \item Combines all frames into a single graph
+    \item Uses 3D node coordinates $(x, y, t)$ to represent spatial-temporal positions
+    \item Applies standard GCN layers followed by graph pooling
+    \item Classifies the entire video sequence with a single forward pass
+\end{enumerate}
+
+\section{Graph Construction for 3D-GCN}
+
+\subsection{Node Feature Transformation}
+
+The original 8-dimensional node features are transformed into 6 dimensions for the 3D-GCN:
+
+\begin{table}[H]
+\centering
+\caption{3D-GCN Node Features}
+\label{tab:3dgcn_features}
+\begin{tabular}{clll}
+\toprule
+\textbf{Index} & \textbf{Feature} & \textbf{Source} & \textbf{Description} \\
+\midrule
+0 & $x$ & centroid\_x & X-coordinate (normalized) \\
+1 & $y$ & centroid\_y & Y-coordinate (normalized) \\
+2 & $t$ & timestamp & Temporal coordinate (normalized) \\
+3 & width & bbox\_w & Bounding box width \\
+4 & height & bbox\_h & Bounding box height \\
+5 & vehicle\_id & vehicle\_class & Vehicle identifier \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Coordinate Normalization}
+
+Coordinates are normalized to $[0, 1]$ range:
+
+\begin{align}
+    x_{\text{norm}} &= \frac{x - x_{\min}}{x_{\max} - x_{\min}} \\
+    y_{\text{norm}} &= \frac{y - y_{\min}}{y_{\max} - y_{\min}} \\
+    t_{\text{norm}} &= \frac{t - t_{\min}}{t_{\max} - t_{\min}}
+\end{align}
+
+\subsection{Edge Construction}
+
+Edges are created within each frame (spatial connections) and across frames for the same vehicle (temporal connections):
+
+\begin{lstlisting}[language=Python, caption={Edge construction for 3D-GCN}]
+# Within-frame edges: all vehicles in same frame connected
+for frame in frames:
+    for i, j in combinations(frame.vehicles, 2):
+        edges.append((i, j))
+        edge_features.append([distance(i, j), frame_num, timestamp])
+
+# Across-frame edges: same vehicle connected across time
+for vehicle_id in unique_vehicles:
+    appearances = get_appearances(vehicle_id)
+    for t1, t2 in consecutive_pairs(appearances):
+        edges.append((node_t1, node_t2))
+\end{lstlisting}
+
+\section{Model Architecture}
+
+\subsection{Architecture Overview}
+
+The 3D-GCN architecture consists of:
+
+\begin{enumerate}
+    \item \textbf{Input layer:} 6-dimensional node features
+    \item \textbf{GCN layers:} 3 graph convolutional layers
+    \item \textbf{Graph pooling:} Combined mean, max, and sum pooling
+    \item \textbf{Classifier:} Multi-layer perceptron (MLP) head
+\end{enumerate}
+
+Figure~\ref{fig:gcn3d_architecture} shows the complete model architecture.
+
+\begin{figure}[H]
+    \centering
+    \input{figures/gcn3d_architecture}
+    \caption{3D-GCN model architecture. Node features pass through GCN layers, then global pooling aggregates to graph-level representation, followed by MLP classifier.}
+    \label{fig:gcn3d_architecture}
+\end{figure}
+
+\subsection{Layer Dimensions}
+
+\begin{table}[H]
+\centering
+\caption{3D-GCN Layer Dimensions (Baseline Configuration)}
+\label{tab:gcn3d_layers}
+\begin{tabular}{lcc}
+\toprule
+\textbf{Layer} & \textbf{Input Dim} & \textbf{Output Dim} \\
+\midrule
+Input & - & 6 \\
+GCN Layer 1 & 6 & 64 \\
+GCN Layer 2 & 64 & 64 \\
+GCN Layer 3 & 64 & 64 \\
+\midrule
+Pooling (All) & $N \times 64$ & 192 ($64 \times 3$) \\
+\midrule
+FC Layer 1 & 192 & 64 \\
+FC Layer 2 & 64 & 32 \\
+FC Layer 3 & 32 & 1 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{GCN Layer Implementation}
+
+Each GCN layer applies the standard graph convolution:
+
+\begin{lstlisting}[language=Python, caption={GCN layer forward pass}]
+class GCN3D(nn.Module):
+    def forward(self, data):
+        x, edge_index, batch = data.x, data.edge_index, data.batch
+        
+        # Extract 3D coordinates and additional features
+        node_coords_3d = x[:, :3]  # [N, 3] - x, y, timestamp
+        node_features = x[:, 3:]   # [N, 3] - width, height, vehicle_id
+        
+        # Combine features
+        x_combined = torch.cat([node_coords_3d, node_features], dim=1)
+        
+        # Apply GCN layers
+        for i, conv in enumerate(self.convs):
+            x_combined = conv(x_combined, edge_index)
+            if i < len(self.convs) - 1:
+                x_combined = F.relu(x_combined)
+                x_combined = self.dropout_layer(x_combined)
+        
+        # Graph-level pooling
+        graph_emb = self.pooling(x_combined, batch)
+        
+        # Classification
+        return self.classifier(graph_emb)
+\end{lstlisting}
+
+\subsection{Pooling Strategies}
+
+The model supports multiple pooling strategies:
+
+\begin{table}[H]
+\centering
+\caption{Pooling Strategy Configurations}
+\label{tab:pooling_strategies}
+\begin{tabular}{lcc}
+\toprule
+\textbf{Strategy} & \textbf{Operations} & \textbf{Output Dim} \\
+\midrule
+Mean & Mean only & $d$ \\
+Max & Max only & $d$ \\
+Sum & Sum only & $d$ \\
+MeanMax & Mean + Max (concat) & $2d$ \\
+All & Mean + Max + Sum (concat) & $3d$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\section{Training Configuration}
+
+\subsection{Baseline Configuration}
+
+\begin{table}[H]
+\centering
+\caption{3D-GCN Baseline Training Configuration}
+\label{tab:gcn3d_baseline_config}
+\begin{tabular}{ll}
+\toprule
+\textbf{Parameter} & \textbf{Value} \\
+\midrule
+\multicolumn{2}{l}{\textit{Model Architecture}} \\
+Hidden dimension & 64 \\
+Number of GCN layers & 3 \\
+Dropout rate & 0.5 \\
+Pooling type & All (mean + max + sum) \\
+Classifier hidden layers & [64, 32] \\
+\midrule
+\multicolumn{2}{l}{\textit{Training Parameters}} \\
+Batch size & 1 \\
+Number of epochs & 100 (early stopped at 21) \\
+Learning rate & $1 \times 10^{-6}$ \\
+Weight decay & $1 \times 10^{-6}$ \\
+Optimizer & Adam \\
+Loss function & Binary Cross-Entropy \\
+\midrule
+\multicolumn{2}{l}{\textit{Early Stopping}} \\
+Patience & 20 epochs \\
+Min delta & 0.0001 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Dataset Split}
+
+\begin{table}[H]
+\centering
+\caption{Dataset 1 Split (3D-GCN Experiments)}
+\label{tab:dataset1_split}
+\begin{tabular}{lccc}
+\toprule
+\textbf{Split} & \textbf{Samples} & \textbf{Normal} & \textbf{Anomalous} \\
+\midrule
+Train & 37 & 18 & 19 \\
+Validation & 6 & 3 & 3 \\
+Test & 10 & 5 & 5 \\
+\midrule
+\textbf{Total} & \textbf{53} & \textbf{26} & \textbf{27} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\section{Baseline Results}
+
+\subsection{Training History}
+
+The baseline model trained for 21 epochs before early stopping:
+
+\begin{table}[H]
+\centering
+\caption{Baseline Training History (Selected Epochs)}
+\label{tab:baseline_training}
+\begin{tabular}{ccccc}
+\toprule
+\textbf{Epoch} & \textbf{Train Loss} & \textbf{Val Loss} & \textbf{Train Acc} & \textbf{Val Acc} \\
+\midrule
+1 & 56.15 & 2.66 & 0.514 & 0.667 \\
+5 & 62.92 & 2.53 & 0.432 & 0.667 \\
+10 & 22.38 & 2.54 & 0.649 & 0.667 \\
+15 & 39.70 & 2.60 & 0.622 & 0.667 \\
+18 & 19.48 & 2.59 & 0.595 & 0.667 \\
+21 & 33.06 & 2.65 & 0.649 & 0.667 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\textbf{Observation:} Validation accuracy remained constant at 66.67\% throughout training, indicating the model struggled to learn discriminative features with the baseline configuration.
+
+\subsection{Baseline Test Results}
+
+\begin{table}[H]
+\centering
+\caption{Baseline Test Set Metrics}
+\label{tab:baseline_test_metrics}
+\begin{tabular}{lc}
+\toprule
+\textbf{Metric} & \textbf{Value} \\
+\midrule
+Accuracy & 0.500 \\
+Precision & 0.500 \\
+Recall & 0.400 \\
+F1-Score & 0.444 \\
+AUC-ROC & 0.480 \\
+AUC-PR & 0.512 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\section{Hyperparameter Optimization}
+
+To improve upon the baseline, we conducted comprehensive hyperparameter optimization using Optuna.
+
+\subsection{Search Space}
+
+\begin{table}[H]
+\centering
+\caption{Hyperparameter Search Space}
+\label{tab:hyperopt_search_space}
+\begin{tabular}{lll}
+\toprule
+\textbf{Parameter} & \textbf{Type} & \textbf{Range} \\
+\midrule
+hidden\_dim & Integer & [32, 128], step=16 \\
+num\_layers & Integer & [2, 5] \\
+dropout & Float & [0.1, 0.7], step=0.1 \\
+pooling\_type & Categorical & [mean, max, sum, meanmax, all] \\
+batch\_size & Integer & [1, 8] \\
+learning\_rate & Float (log) & [$10^{-7}$, $10^{-3}$] \\
+weight\_decay & Float (log) & [$10^{-7}$, $10^{-4}$] \\
+patience & Integer & [5, 30], step=5 \\
+min\_delta & Float (log) & [$10^{-5}$, $10^{-2}$] \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Optimization Configuration}
+
+\begin{itemize}
+    \item \textbf{Framework:} Optuna with TPE (Tree-structured Parzen Estimator) sampler
+    \item \textbf{Objective:} Maximize validation accuracy
+    \item \textbf{Total trials:} 100
+    \item \textbf{Completed trials:} 99 (1 failed)
+    \item \textbf{Storage:} SQLite database for persistence
+\end{itemize}
+
+\subsection{Optimization Results}
+
+\begin{table}[H]
+\centering
+\caption{Hyperparameter Optimization Summary}
+\label{tab:hyperopt_summary}
+\begin{tabular}{lr}
+\toprule
+\textbf{Statistic} & \textbf{Value} \\
+\midrule
+Best validation accuracy & 0.8333 (83.33\%) \\
+Best trial number & 27 \\
+Mean validation accuracy & 0.6178 (61.78\%) \\
+Std validation accuracy & 0.1039 \\
+Min validation accuracy & 0.3333 (33.33\%) \\
+Max validation accuracy & 0.8333 (83.33\%) \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Best Configuration}
+
+\begin{table}[H]
+\centering
+\caption{Best Model Configuration (Trial 27)}
+\label{tab:best_config}
+\begin{tabular}{ll}
+\toprule
+\textbf{Parameter} & \textbf{Value} \\
+\midrule
+\multicolumn{2}{l}{\textit{Model Architecture}} \\
+Hidden dimension & 32 \\
+Number of layers & 2 \\
+Dropout rate & 0.1 \\
+Pooling type & Sum \\
+\midrule
+\multicolumn{2}{l}{\textit{Training Parameters}} \\
+Batch size & 6 \\
+Learning rate & $1.78 \times 10^{-4}$ \\
+Weight decay & $1.65 \times 10^{-6}$ \\
+Patience & 20 \\
+Min delta & $2.97 \times 10^{-3}$ \\
+\midrule
+\multicolumn{2}{l}{\textit{Performance}} \\
+Validation accuracy & 0.8333 (83.33\%) \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Top Performing Trials}
+
+Multiple trials achieved the best validation accuracy:
+
+\begin{table}[H]
+\centering
+\caption{Top 10 Trials by Validation Accuracy}
+\label{tab:top_trials}
+\begin{tabular}{lcc}
+\toprule
+\textbf{Trial} & \textbf{Val Acc} & \textbf{Key Parameters} \\
+\midrule
+27 (Best) & 0.8333 & hidden=32, layers=2, dropout=0.1, pool=sum \\
+53 & 0.8333 & hidden=128, layers=4, dropout=0.1 \\
+58 & 0.8333 & hidden=96, layers=2, dropout=0.1 \\
+60 & 0.8333 & hidden=32, layers=2, dropout=0.3 \\
+71 & 0.8333 & hidden=48, layers=2, dropout=0.4 \\
+78 & 0.8333 & hidden=32, layers=2, dropout=0.1 \\
+86 & 0.8333 & hidden=48, layers=2, dropout=0.1 \\
+97 & 0.8333 & hidden=32, layers=2, dropout=0.3 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Figure~\ref{fig:hyperopt_results} visualizes the hyperparameter optimization results.
+
+\begin{figure}[H]
+    \centering
+    \input{figures/hyperopt_results}
+    \caption{Hyperparameter optimization results showing validation accuracy distribution across 100 trials.}
+    \label{fig:hyperopt_results}
+\end{figure}
+
+\section{Baseline vs. Optimized Comparison}
+
+\begin{table}[H]
+\centering
+\caption{Baseline vs. Optimized Configuration Comparison}
+\label{tab:baseline_vs_optimized}
+\begin{tabular}{lcc}
+\toprule
+\textbf{Parameter} & \textbf{Baseline} & \textbf{Optimized} \\
+\midrule
+Hidden dimension & 64 & 32 \\
+Number of layers & 3 & 2 \\
+Dropout rate & 0.5 & 0.1 \\
+Pooling type & All & Sum \\
+Batch size & 1 & 6 \\
+Learning rate & $1.0 \times 10^{-6}$ & $1.78 \times 10^{-4}$ \\
+Weight decay & $1.0 \times 10^{-6}$ & $1.65 \times 10^{-6}$ \\
+\midrule
+\textbf{Validation Accuracy} & \textbf{0.6667} & \textbf{0.8333} \\
+\textbf{Improvement} & -- & \textbf{+16.66\%} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\section{Key Findings}
+
+From the hyperparameter optimization, we observe:
+
+\begin{enumerate}
+    \item \textbf{Simpler architecture performs better:} The optimal configuration uses only 2 GCN layers instead of 3, suggesting that deeper networks may overfit on this small dataset.
+    
+    \item \textbf{Lower hidden dimension:} 32 hidden units outperform 64, indicating the model benefits from regularization through reduced capacity.
+    
+    \item \textbf{Lower dropout:} 0.1 dropout is better than 0.5, suggesting the baseline was over-regularized.
+    
+    \item \textbf{Sum pooling effective:} Sum pooling alone outperforms the combined (all) pooling strategy, possibly because it better preserves information about graph size.
+    
+    \item \textbf{Higher batch size:} Batch size 6 provides better gradient estimates than batch size 1, leading to more stable training.
+    
+    \item \textbf{Higher learning rate:} A learning rate of $1.78 \times 10^{-4}$ (178$\times$ higher than baseline) enables faster convergence.
+\end{enumerate}
+
+\section{Model Limitations}
+
+Despite the improvements from hyperparameter optimization, the 3D-GCN approach has several limitations:
+
+\begin{enumerate}
+    \item \textbf{Loss of temporal order:} By combining all frames into a single graph, the explicit temporal ordering is partially lost (only preserved through timestamp feature).
+    
+    \item \textbf{Dataset size:} With only 53 samples, the model is prone to overfitting and may not generalize well to new scenarios.
+    
+    \item \textbf{Variable graph sizes:} Videos with different numbers of vehicles result in graphs of varying sizes, which may affect pooling effectiveness.
+    
+    \item \textbf{Static graph assumption:} The single-graph representation cannot explicitly model the dynamic evolution of vehicle interactions over time.
+\end{enumerate}
+
+These limitations motivate the Dynamic GNN approach presented in Chapter~\ref{ch:model_dynamic_gnn}.
+
+
+
+

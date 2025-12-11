@@ -1,0 +1,51 @@
+# Eval config for Optuna best model (trial_rank_1)
+
+data:
+  root_dir: "/workspace/saumilya/GNN-Research/NiAD_graphs_node_feature_based"
+  train_manifest: "train_manifest.csv"
+  val_manifest: "val_manifest.csv"
+  test_manifest: "test_manifest.csv"
+  num_workers: 0   # avoid shared memory/file descriptor issues
+  pin_memory: true
+  normalize_features: true
+
+model:
+  type: "full"
+  input_dim: 8
+  hidden_dim: 32          # from best trial
+  temporal_dim: 256       # from best trial
+  num_gcn_layers: 4       # from best trial
+  num_gru_layers: 1       # from best trial
+  dropout: 0.45           # from best trial
+  num_classes: 2
+
+training:
+  gpu_id: 4               # use GPU 4 (same as main config)
+  batch_size: 16          # from best trial
+  max_epochs: 100
+  learning_rate: 3.829113932882321e-05   # from best trial
+  weight_decay: 2.7231888989183508e-06   # from best trial
+  gradient_clip_val: 1.0
+  accumulate_grad_batches: 1
+  optimizer: "adam"
+  scheduler: "plateau"
+  monitor_metric: "val_loss"
+  monitor_mode: "min"
+
+loss:
+  type: "focal"
+  gamma: 1.0
+
+callbacks:
+  checkpoint:
+    save_top_k: 3
+    save_last: true
+    every_n_epochs: 1
+  early_stopping:
+    patience: 15
+    min_delta: 0.0001
+
+logging:
+  log_every_n_steps: 10
+  experiment_name: "temporal_gnn_optuna_best"
+

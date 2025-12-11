@@ -1,0 +1,162 @@
+# LaTeX auxiliary files
+*.aux
+*.bbl
+*.blg
+*.fdb_latexmk
+*.fls
+*.log
+*.out
+*.synctex.gz
+*.toc
+*.lof
+*.lot
+*.lol
+*.nav
+*.snm
+*.vrb
+*.bcf
+*.run.xml
+*.idx
+*.ilg
+*.ind
+*.acn
+*.acr
+*.alg
+*.glg
+*.glo
+*.gls
+*.ist
+*.loa
+*.xdy
+
+# LaTeX build files
+*.dvi
+*.ps
+*.eps
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Virtual environments
+venv/
+env/
+ENV/
+.venv
+
+
+# PyTorch
+*.pth
+*.pt
+*.ckpt
+*.pkl
+*.h5
+*.hdf5
+
+# Data files
+*.csv
+*.json
+*.mp4
+*.avi
+*.mov
+*.mkv
+*.png
+*.jpg
+*.jpeg
+*.gif
+*.bmp
+*.tiff
+*.npy
+*.npz
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+*.sublime-project
+*.sublime-workspace
+
+# Experiments and results
+experiments/
+results/
+logs/
+wandb/
+tensorboard/
+*.log
+
+# Model checkpoints and weights
+checkpoints/
+models/
+weights/
+*.pth.tar
+*.pt.tar
+
+# Dataset directories and files
+data/
+datasets/
+dataset/
+Dataset/
+NiAD_*/
+NiAD_*_processed_graphs/
+NiAD_*_Videos/
+NiAD_*_Videos_processed_graphs/
+NiAD_graphs_*/
+NiAD_Large_Videos/
+NiAD_Large_Videos_processed_graphs/
+final_dataset_new/
+processed/
+graphs/
+raw_data/
+video_data/
+*.mp4
+*.avi
+*.mov
+*.mkv
+*.flv
+*.wmv
+*.webm
+*.m4v
+# Keep manifest CSVs if needed, but ignore large data CSVs
+# Uncomment next line if you want to ignore all CSVs
+# *.csv
+
+# Temporary files
+*.tmp
+*.temp
+*.bak
+*.backup
+*.old
+
+# OS files
+Thumbs.db
+.DS_Store
+.Spotlight-V100
+.Trashes
+
+# Project specific
+node_modules/
+.cache/
+*.cache
+

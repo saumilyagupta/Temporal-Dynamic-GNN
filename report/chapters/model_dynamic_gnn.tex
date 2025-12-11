@@ -1,0 +1,141 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Chapter 4: Temporal DGNN Model
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\chapter{Temporal DGNN Model}
+\label{ch:model_dynamic_gnn}
+
+This chapter presents the Temporal Graph Neural Network (Temporal DGNN) model, which processes temporal sequences of graphs by combining spatial graph convolutions with temporal GRU modeling. This approach is evaluated on the NiAD\_large\_graphs dataset containing 1,176 videos.
+
+\section{Model Overview}
+
+The Temporal DGNN architecture follows a simple yet effective design:
+
+\begin{enumerate}
+    \item \textbf{Per-frame GCN processing:} Each frame's graph is processed independently by two GCN layers
+    \item \textbf{Identity alignment:} Nodes are sorted by \texttt{node\_ids} for temporal consistency
+    \item \textbf{Mean pooling:} Frame-level embeddings are computed via mean pooling
+    \item \textbf{GRU temporal modeling:} Frame embeddings are processed sequentially by GRU
+    \item \textbf{Classification:} Final hidden state is passed through a classifier
+\end{enumerate}
+
+\section{Architecture Components}
+
+\subsection{Overall Architecture}
+
+The model processes a list of 30 PyG graph objects and outputs a binary classification:
+
+\begin{figure}[H]
+    \centering
+    \input{figures/dynamic_gnn_architecture}
+    \caption{Temporal DGNN architecture: per-frame GCN processing followed by GRU temporal modeling for video-level classification.}
+    \label{fig:dynamic_gnn_architecture}
+\end{figure}
+
+The model architecture: GCNConv(8, 64) $\rightarrow$ GCNConv(64, 64) $\rightarrow$ mean pooling $\rightarrow$ GRU(64, 128) $\rightarrow$ Linear(128, 2). Nodes are sorted by \texttt{node\_ids} before processing to ensure temporal consistency.
+
+\section{Model Configuration}
+
+\subsection{Architecture Parameters}
+
+\begin{table}[H]
+\centering
+\caption{Temporal DGNN Architecture Configuration}
+\label{tab:temporal_gnn_config}
+\begin{tabular}{ll}
+\toprule
+\textbf{Parameter} & \textbf{Value} \\
+\midrule
+\multicolumn{2}{l}{\textit{Input}} \\
+Node feature dimension & 8 \\
+Sequence length & 30 frames \\
+\midrule
+\multicolumn{2}{l}{\textit{GCN Layers}} \\
+Number of GCN layers & 2 \\
+Layer 1 & GCNConv(8, 64) \\
+Layer 2 & GCNConv(64, 64) \\
+Activation & ReLU \\
+\midrule
+\multicolumn{2}{l}{\textit{GRU Module}} \\
+Input dimension & 64 \\
+Hidden dimension & 128 \\
+Number of layers & 1 \\
+\midrule
+\multicolumn{2}{l}{\textit{Classifier}} \\
+Input dimension & 128 \\
+Output dimension & 2 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Training Configuration}
+
+\begin{table}[H]
+\centering
+\caption{Training Configuration (from config.yaml)}
+\label{tab:training_config}
+\begin{tabular}{ll}
+\toprule
+\textbf{Parameter} & \textbf{Value} \\
+\midrule
+\multicolumn{2}{l}{\textit{Optimization}} \\
+Optimizer & Adam \\
+Learning rate & $1 \times 10^{-3}$ \\
+Weight decay & $1 \times 10^{-5}$ \\
+Gradient clipping & 1.0 \\
+\midrule
+\multicolumn{2}{l}{\textit{Training}} \\
+Batch size & 8 \\
+Max epochs & 100 \\
+GPU & cuda:4 \\
+\midrule
+\multicolumn{2}{l}{\textit{Scheduler}} \\
+Type & ReduceLROnPlateau \\
+Monitor & val\_loss \\
+Mode & min \\
+\midrule
+\multicolumn{2}{l}{\textit{Early Stopping}} \\
+Patience & 15 epochs \\
+Min delta & 0.0001 \\
+\midrule
+\multicolumn{2}{l}{\textit{Checkpointing}} \\
+Save top k & 3 \\
+Save last & True \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\section{Focal Loss}
+
+\subsection{Motivation}
+
+The NiAD\_large\_graphs dataset exhibits class imbalance:
+\begin{itemize}
+    \item Training: 638 Normal (75.8\%) vs 204 Anomalous (24.2\%)
+    \item Validation: 112 Normal (87.5\%) vs 16 Anomalous (12.5\%)
+    \item Test: 184 Normal (89.3\%) vs 22 Anomalous (10.7\%)
+\end{itemize}
+
+Focal Loss addresses this by down-weighting well-classified examples.
+
+\subsection{Mathematical Formulation}
+
+The Focal Loss is defined as:
+
+\begin{equation}
+    \text{FL}(p_t) = -\alpha_t (1 - p_t)^\gamma \log(p_t)
+\end{equation}
+
+where:
+\begin{itemize}
+    \item $p_t$ is the predicted probability for the true class
+    \item $\gamma$ is the focusing parameter (reduces loss for well-classified examples)
+    \item $\alpha_t$ is the class balancing weight
+\end{itemize}
+
+Focal Loss: $\text{FL}(p_t) = -\alpha_t (1 - p_t)^\gamma \log(p_t)$ where $\gamma=1.0$ and $\alpha=0.758$ (computed from training set: 638 Normal / 842 total).
+
+Training uses PyTorch Lightning with Adam optimizer (lr=$10^{-3}$, weight decay=$10^{-5}$), batch size 8, gradient clipping 1.0, and early stopping (patience=15). A custom collate function handles variable-size graph sequences.
+
+
+Key design decisions: dynamic graphs (no padding), node ID sorting for temporal consistency, simple 2-layer GCN + GRU architecture, mean pooling, and Focal Loss for class imbalance.

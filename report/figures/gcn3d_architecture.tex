@@ -1,0 +1,87 @@
+% 3D GCN Architecture Diagram
+\begin{tikzpicture}[
+    node distance=0.5cm and 1cm,
+    box/.style={
+        rectangle,
+        rounded corners=4pt,
+        minimum width=1.8cm,
+        minimum height=1cm,
+        align=center,
+        draw=black,
+        thick,
+        font=\small
+    },
+    input/.style={box, fill=cyan!25},
+    gcn/.style={box, fill=green!30},
+    pool/.style={box, fill=orange!25},
+    fc/.style={box, fill=purple!25},
+    output/.style={box, fill=red!25},
+    arrow/.style={thick, -Stealth},
+    dimtext/.style={font=\tiny, align=center}
+]
+
+% Title
+\node[font=\large\bfseries] at (6.5, 6.5) {3D Graph Convolutional Network};
+\node[font=\small] at (6.5, 5.9) {Static Spatial-Temporal Graph Processing};
+
+% Input
+\node[input] (input) at (0, 4) {Input\\Graph};
+\node[dimtext] at (0, 2.8) {$[N, 6]$};
+\node[dimtext, gray] at (0, 2.4) {x, y, t, w, h, id};
+
+% GCN Layers - more spacing
+\node[gcn] (gcn1) at (3, 4) {GCN 1};
+\node[dimtext] at (3, 2.8) {$6 \to 64$};
+\node[dimtext, gray] at (3, 2.4) {ReLU + Drop};
+
+\node[gcn] (gcn2) at (6, 4) {GCN 2};
+\node[dimtext] at (6, 2.8) {$64 \to 64$};
+\node[dimtext, gray] at (6, 2.4) {ReLU + Drop};
+
+\node[gcn] (gcn3) at (9, 4) {GCN 3};
+\node[dimtext] at (9, 2.8) {$64 \to 64$};
+\node[dimtext, gray] at (9, 2.4) {(no act.)};
+
+% Pooling
+\node[pool] (pool) at (12, 4) {Pooling};
+\node[dimtext] at (12, 2.8) {Mean+Max+Sum};
+\node[dimtext, gray] at (12, 2.4) {$\to 192$};
+
+% FC Layers - second row
+\node[fc] (fc1) at (12, 0.5) {FC 1};
+\node[dimtext, right=0.3cm of fc1] {$192 \to 64$};
+
+\node[fc] (fc2) at (8, 0.5) {FC 2};
+\node[dimtext, right=0.3cm of fc2] {$64 \to 32$};
+
+\node[fc] (fc3) at (4, 0.5) {FC 3};
+\node[dimtext, right=0.3cm of fc3] {$32 \to 1$};
+
+% Output
+\node[output] (output) at (0, 0.5) {Output};
+\node[dimtext] at (0, -0.6) {$\sigma(\cdot)$};
+\node[dimtext, gray] at (0, -1.0) {Normal/Anom.};
+
+% Arrows - top row
+\draw[arrow] (input) -- (gcn1);
+\draw[arrow] (gcn1) -- (gcn2);
+\draw[arrow] (gcn2) -- (gcn3);
+\draw[arrow] (gcn3) -- (pool);
+
+% Arrow down and back
+\draw[arrow] (pool) -- (fc1);
+\draw[arrow] (fc1) -- (fc2);
+\draw[arrow] (fc2) -- (fc3);
+\draw[arrow] (fc3) -- (output);
+
+% Edge index annotation
+\draw[dashed, gray, -Stealth] (0, 5) -- (0, 5.5) -- (9, 5.5) -- (9, 4.7);
+\node[font=\tiny, gray, fill=white] at (4.5, 5.5) {Edge Index $[2, E]$ shared across GCN layers};
+
+% Legend
+\node[font=\tiny, align=left, fill=gray!10, draw=gray, rounded corners] at (0, -2) {
+    N = nodes, E = edges\\
+    Dropout = 0.5 (baseline)
+};
+
+\end{tikzpicture}

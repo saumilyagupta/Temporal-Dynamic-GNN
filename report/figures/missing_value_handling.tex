@@ -1,0 +1,70 @@
+% Missing Value Handling Flow
+\begin{tikzpicture}[
+    node distance=1cm and 1.5cm,
+    box/.style={
+        rectangle,
+        rounded corners=3pt,
+        minimum width=3cm,
+        minimum height=1cm,
+        align=center,
+        draw=black,
+        thick,
+        font=\small
+    },
+    decision/.style={
+        diamond,
+        draw=black,
+        thick,
+        minimum width=2cm,
+        minimum height=1cm,
+        font=\small,
+        aspect=2
+    },
+    arrow/.style={-Stealth, thick}
+]
+
+% Title
+\node[font=\bfseries] at (6, 5.5) {Missing Value Handling Workflow};
+
+% Storage phase
+\node[font=\small\bfseries, gray] at (2, 4.5) {Storage Phase};
+
+\node[box, fill=cyan!20] (detect) at (2, 3.5) {Vehicle\\Detection};
+\node[decision, fill=yellow!20] (present) at (2, 2) {Present?};
+\node[box, fill=green!20] (fill) at (0, 0.5) {Fill with\\actual values};
+\node[box, fill=red!20] (missing) at (4, 0.5) {Fill with\\$-\infty$};
+\node[box, fill=purple!20] (store) at (2, -1) {Store in\\HDF5};
+
+\draw[arrow] (detect) -- (present);
+\draw[arrow] (present) -- node[left, font=\tiny] {Yes} (fill);
+\draw[arrow] (present) -- node[right, font=\tiny] {No} (missing);
+\draw[arrow] (fill) -- (store);
+\draw[arrow] (missing) -- (store);
+
+% Loading phase
+\node[font=\small\bfseries, gray] at (10, 4.5) {Loading Phase};
+
+\node[box, fill=purple!20] (load) at (10, 3.5) {Load from\\HDF5};
+\node[decision, fill=yellow!20] (check) at (10, 2) {$= -\infty$?};
+\node[box, fill=green!20] (keep) at (8, 0.5) {Keep\\value};
+\node[box, fill=orange!20] (replace) at (12, 0.5) {Replace with\\$-10^{-40}$};
+\node[box, fill=blue!20] (mask) at (10, -1) {Apply\\Mask};
+
+\draw[arrow] (load) -- (check);
+\draw[arrow] (check) -- node[left, font=\tiny] {No} (keep);
+\draw[arrow] (check) -- node[right, font=\tiny] {Yes} (replace);
+\draw[arrow] (keep) -- (mask);
+\draw[arrow] (replace) -- (mask);
+
+% Connection between phases
+\draw[arrow, dashed, gray] (store) -- ++(4, 0) |- (load);
+\node[font=\tiny, fill=white] at (6, 1.25) {File I/O};
+
+% Notes
+\node[font=\tiny, align=center, fill=yellow!10, rounded corners] at (6, -2.5) {
+    $-\infty$ sentinel value allows distinguishing missing data from zeros\\
+    $-10^{-40}$ is small enough to not affect model but avoids NaN in computations
+};
+
+\end{tikzpicture}
+

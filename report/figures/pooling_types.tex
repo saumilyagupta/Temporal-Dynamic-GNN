@@ -1,0 +1,79 @@
+% Pooling Types Diagram
+\begin{tikzpicture}[
+    node distance=0.5cm,
+    matrix/.style={
+        rectangle,
+        draw=black,
+        minimum width=0.6cm,
+        minimum height=0.6cm,
+        font=\tiny
+    },
+    result/.style={
+        rectangle,
+        draw=black,
+        thick,
+        minimum width=0.8cm,
+        minimum height=0.6cm,
+        font=\tiny
+    },
+    arrow/.style={-Stealth, thick}
+]
+
+% Title
+\node[font=\bfseries] at (6, 5.5) {Graph Pooling Operations};
+
+% Input node features
+\node[font=\small\bfseries] at (1.5, 4.5) {Node Features};
+\node[font=\tiny] at (1.5, 4) {$\mat{H} \in \R^{N \times d}$};
+
+% Node feature matrix visualization
+\foreach \i in {0,...,3} {
+    \foreach \j in {0,...,2} {
+        \node[matrix, fill=blue!\the\numexpr20+\i*15\relax!white] at (0.3+\j*0.7, 3-\i*0.7) {};
+    }
+}
+\node[font=\tiny] at (1, 0.6) {$N=4$ nodes};
+\node[font=\tiny] at (2.8, 2.3) {$d=3$};
+
+% Mean Pooling
+\node[font=\small\bfseries] at (5, 4.5) {Mean Pool};
+\draw[arrow] (2.5, 2) -- (4, 2);
+\node[result, fill=green!30] (mean) at (5, 2) {$\bar{\vect{h}}$};
+\node[font=\tiny, below=0.1cm of mean] {$\frac{1}{N}\sum_i \vect{h}_i$};
+
+% Max Pooling
+\node[font=\small\bfseries] at (8, 4.5) {Max Pool};
+\draw[arrow] (2.5, 2) -- (7, 2.5);
+\node[result, fill=orange!30] (max) at (8, 2.5) {$\vect{h}_{\max}$};
+\node[font=\tiny, below=0.1cm of max] {$\max_i \vect{h}_i$};
+
+% Sum Pooling
+\node[font=\small\bfseries] at (11, 4.5) {Sum Pool};
+\draw[arrow] (2.5, 2) -- (10, 1.5);
+\node[result, fill=red!30] (sum) at (11, 1.5) {$\vect{h}_{\Sigma}$};
+\node[font=\tiny, below=0.1cm of sum] {$\sum_i \vect{h}_i$};
+
+% Combined pooling
+\node[font=\small\bfseries] at (8, -0.5) {Combined Pooling};
+
+% MeanMax
+\node[result, fill=green!30, minimum width=0.4cm] at (6.8, -1.5) {};
+\node[result, fill=orange!30, minimum width=0.4cm] at (7.2, -1.5) {};
+\node[font=\tiny] at (7, -2) {MeanMax: $[2d]$};
+
+% All
+\node[result, fill=green!30, minimum width=0.3cm] at (9.5, -1.5) {};
+\node[result, fill=orange!30, minimum width=0.3cm] at (9.8, -1.5) {};
+\node[result, fill=red!30, minimum width=0.3cm] at (10.1, -1.5) {};
+\node[font=\tiny] at (9.8, -2) {All: $[3d]$};
+
+% Arrows to combined
+\draw[arrow, dashed] (mean) -- (7, -1);
+\draw[arrow, dashed] (max) -- (8, -1);
+\draw[arrow, dashed] (sum) -- (9.8, -1);
+
+\end{tikzpicture}
+
+
+
+

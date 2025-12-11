@@ -1,0 +1,152 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Chapter 6: Conclusion
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\chapter{Conclusion}
+\label{ch:conclusion}
+
+This chapter summarizes the key findings of our research on the Temporal DGNN model for video anomaly detection using the NiAD\_large\_graphs dataset and discusses directions for future work.
+
+\section{Summary of Contributions}
+
+This research has made several contributions to the field of video anomaly detection using graph-based representations:
+
+\subsection{Node-Feature-Based Data Pipeline}
+
+We developed a streamlined data processing pipeline that:
+\begin{enumerate}
+    \item Converts 30-frame surveillance videos into sequences of PyTorch Geometric graphs
+    \item Employs YOLOv8 for robust vehicle detection (car, motorcycle, bus, truck)
+    \item Implements centroid-based tracking for consistent vehicle identification
+    \item Produces dynamic graphs with variable node counts per frame
+    \item Eliminates the need for padding, masks, and sentinel values
+    \item Stores graphs efficiently as \texttt{.pt} files (30 per video) with CSV manifests
+\end{enumerate}
+
+\subsection{Temporal DGNN Architecture}
+
+We implemented an effective Temporal DGNN model that:
+\begin{itemize}
+    \item Processes temporal sequences of per-frame graphs
+    \item Uses two GCN layers for spatial feature extraction
+    \item Employs node ID sorting for temporal consistency
+    \item Applies mean pooling for frame-level embeddings
+    \item Uses GRU for temporal sequence modeling
+    \item Achieves \textbf{89.32\% test accuracy} with \textbf{AUC-ROC of 0.81} on the NiAD\_large\_graphs dataset
+\end{itemize}
+
+\subsection{Experimental Analysis}
+
+Our comprehensive experimental analysis revealed:
+\begin{enumerate}
+    \item The effectiveness of dynamic graph representations
+    \item The benefits of data augmentation for anomalous class balancing
+    \item The impact of Focal Loss on handling class imbalance
+    \item The importance of node ID alignment for temporal consistency
+    \item The challenges of anomaly detection with imbalanced test sets
+\end{enumerate}
+
+\section{Key Findings}
+
+\subsection{Architecture Insights}
+
+\begin{enumerate}
+    \item \textbf{Simplicity is effective:} The Temporal DGNNSimple architecture with just 2 GCN layers and a single GRU layer achieves strong performance.
+    
+    \item \textbf{Temporal modeling is crucial:} The GRU captures sequential dependencies that distinguish normal traffic from anomalous events.
+    
+    \item \textbf{Node ID alignment matters:} Sorting nodes by tracking IDs ensures consistent temporal feature alignment across frames.
+\end{enumerate}
+
+\subsection{Data Representation Insights}
+
+\begin{enumerate}
+    \item \textbf{Dynamic graphs are cleaner:} Variable-size per-frame graphs eliminate padding complexity and sentinel value handling.
+    
+    \item \textbf{Edge weights provide context:} Euclidean distances between vehicles encode spatial relationships effectively.
+    
+    \item \textbf{Augmentation helps balance:} 4$\times$ augmentation of anomalous samples improves training balance.
+\end{enumerate}
+
+\subsection{Practical Insights}
+
+\begin{enumerate}
+    \item \textbf{Class imbalance is critical:} Despite Focal Loss, the 8.4:1 test set imbalance limits anomaly detection recall.
+    
+    \item \textbf{High normal accuracy:} The model excels at identifying normal traffic patterns (F1 = 0.93).
+    
+    \item \textbf{Low anomaly recall:} Detecting anomalies remains challenging (recall = 13.64\%) due to class imbalance.
+\end{enumerate}
+
+\section{Limitations}
+
+\subsection{Dataset Limitations}
+
+\begin{enumerate}
+    \item \textbf{Class imbalance:} The test set ratio of 8.4:1 (Normal:Anomalous) limits fair evaluation.
+    
+    \item \textbf{Limited anomaly samples:} Only 22 anomalous test samples provide limited statistical power.
+    
+    \item \textbf{Single domain:} All videos are from traffic surveillance night-time scenarios.
+\end{enumerate}
+
+\subsection{Model Limitations}
+
+\begin{enumerate}
+    \item \textbf{Low anomaly recall:} Only 13.64\% of anomalies are detected, insufficient for safety-critical applications.
+    
+    \item \textbf{Detection dependency:} YOLO detection quality directly affects graph quality.
+    
+    \item \textbf{Tracking errors:} Tracking failures can disrupt temporal consistency.
+\end{enumerate}
+
+\section{Future Work}
+
+Future research directions for GNN-based video anomaly detection include:
+
+\begin{enumerate}
+    \item \textbf{Class imbalance mitigation:} Developing better sampling strategies, threshold optimization, and cost-sensitive learning approaches to improve anomaly detection recall.
+    
+    \item \textbf{Advanced temporal modeling:} Exploring bidirectional recurrent networks, Transformer-based temporal attention, and specialized temporal graph networks.
+    
+    \item \textbf{Enhanced feature engineering:} Adding velocity, relative position, and detection confidence as additional node features.
+    
+    \item \textbf{Anomaly localization:} Extending binary classification to temporal and spatial localization of anomalous events.
+    
+    \item \textbf{Real-time deployment:} Optimizing inference speed for practical traffic monitoring applications.
+    
+    \item \textbf{Self-supervised approaches:} Learning normal traffic patterns without labels for unsupervised anomaly detection.
+\end{enumerate}
+
+\section{Broader Impact}
+
+\subsection{Positive Impacts}
+
+\begin{enumerate}
+    \item \textbf{Road safety:} Automated accident detection enables faster emergency response
+    \item \textbf{Traffic management:} Real-time anomaly detection supports intelligent transportation
+    \item \textbf{Research baseline:} Our pipeline and model serve as baselines for future research
+\end{enumerate}
+
+\subsection{Considerations}
+
+\begin{enumerate}
+    \item \textbf{Privacy:} Video surveillance raises privacy concerns
+    \item \textbf{Reliability:} Safety-critical systems require high reliability
+    \item \textbf{Bias:} Models may exhibit bias based on training data
+\end{enumerate}
+
+\section{Final Remarks}
+
+This research demonstrates that Graph Neural Networks provide an effective framework for video anomaly detection by representing vehicle interactions as dynamic graphs. The Temporal DGNN model achieves \textbf{89.32\% accuracy} with \textbf{AUC-ROC of 0.81} on the NiAD\_large\_graphs dataset, with strong performance on normal traffic detection (97.3\% specificity).
+
+The key contributions of our work are:
+\begin{itemize}
+    \item A clean, node-feature-based pipeline producing PyG \texttt{.pt} files
+    \item Dynamic graph representation without padding or masks
+    \item Effective temporal modeling through GCN + GRU architecture
+    \item Comprehensive analysis of class imbalance effects
+\end{itemize}
+
+While the results are promising, significant challenges remain in achieving the high anomaly recall rates required for safety-critical applications. Addressing class imbalance and improving anomaly detection recall are critical areas for future research.
+

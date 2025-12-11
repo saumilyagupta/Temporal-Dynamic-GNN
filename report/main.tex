@@ -1,0 +1,304 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% GNN Research Experiments Technical Report
+% Graph Neural Networks for Video Anomaly Detection
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\documentclass[10pt,a4paper]{report}
+
+%------------------------------------------------------------------------------
+% Packages
+%------------------------------------------------------------------------------
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{amsmath,amssymb,amsfonts}
+\usepackage{mathtools}
+\usepackage{bm}  % Bold math symbols
+\usepackage{graphicx}
+\usepackage{xcolor}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.16}
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{multirow}
+\usepackage{array}
+\usepackage{float}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{listings}
+\usepackage{hyperref}
+\usepackage{geometry}
+\usepackage{fancyhdr}
+\usepackage{setspace}
+\usepackage{enumitem}
+\usepackage{tocloft}
+\usepackage{adjustbox}
+
+%------------------------------------------------------------------------------
+% TikZ Libraries
+%------------------------------------------------------------------------------
+\usetikzlibrary{
+    shapes.geometric,
+    arrows.meta,
+    positioning,
+    decorations.pathreplacing,
+    calc,
+    fit,
+    backgrounds,
+    matrix,
+    chains,
+    patterns,
+    shadows,
+    trees,
+    mindmap
+}
+
+%------------------------------------------------------------------------------
+% Page Setup
+%------------------------------------------------------------------------------
+\geometry{
+    left=1in,
+    right=1in,
+    top=1in,
+    bottom=1in
+}
+
+\setstretch{0.95}
+\setlength{\parskip}{0.3em}
+\setlength{\itemsep}{0.1em}
+\setlength{\topsep}{0.2em}
+
+%------------------------------------------------------------------------------
+% Header and Footer
+%------------------------------------------------------------------------------
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\leftmark}
+\fancyhead[R]{\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+
+%------------------------------------------------------------------------------
+% Hyperref Setup
+%------------------------------------------------------------------------------
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue!70!black,
+    citecolor=green!50!black,
+    urlcolor=blue!70!black,
+    pdftitle={GNN Research Experiments Technical Report},
+    pdfauthor={Research Team},
+    pdfsubject={Graph Neural Networks for Video Anomaly Detection}
+}
+
+%------------------------------------------------------------------------------
+% Code Listing Style
+%------------------------------------------------------------------------------
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+
+\lstdefinestyle{pythonstyle}{
+    backgroundcolor=\color{backcolour},
+    commentstyle=\color{codegreen},
+    keywordstyle=\color{blue},
+    numberstyle=\tiny\color{codegray},
+    stringstyle=\color{codepurple},
+    basicstyle=\ttfamily\footnotesize,
+    breakatwhitespace=false,
+    breaklines=true,
+    captionpos=b,
+    keepspaces=true,
+    numbers=left,
+    numbersep=5pt,
+    showspaces=false,
+    showstringspaces=false,
+    showtabs=false,
+    tabsize=2,
+    frame=single,
+    framerule=0.5pt
+}
+\lstset{style=pythonstyle}
+
+%------------------------------------------------------------------------------
+% Custom Colors
+%------------------------------------------------------------------------------
+\definecolor{inputcolor}{RGB}{100,149,237}
+\definecolor{gcncolor}{RGB}{60,179,113}
+\definecolor{poolcolor}{RGB}{255,165,0}
+\definecolor{fccolor}{RGB}{147,112,219}
+\definecolor{outputcolor}{RGB}{220,20,60}
+\definecolor{normalcolor}{RGB}{34,139,34}
+\definecolor{anomalouscolor}{RGB}{178,34,34}
+
+%------------------------------------------------------------------------------
+% Custom Commands
+%------------------------------------------------------------------------------
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\mat}[1]{\mathbf{#1}}
+\newcommand{\vect}[1]{\bm{#1}}
+\newcommand{\norm}[1]{\left\|#1\right\|}
+\newcommand{\abs}[1]{\left|#1\right|}
+
+%------------------------------------------------------------------------------
+% Title Information - Custom titlepage
+%------------------------------------------------------------------------------
+\title{
+    \vspace{-1cm}
+    \rule{\linewidth}{0.5mm} \\[0.4cm]
+    {\Huge \bfseries Graph Neural Networks for\\Video Anomaly Detection}\\[0.3cm]
+    {\Large A Comprehensive Technical Report}\\[0.2cm]
+    \rule{\linewidth}{0.5mm}
+}
+
+\author{}
+
+\date{}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Document Begin
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{document}
+
+%------------------------------------------------------------------------------
+% Title Page
+%------------------------------------------------------------------------------
+\begin{titlepage}
+    \thispagestyle{empty}
+    
+    \begin{center}
+        \vspace*{1cm}
+        
+        {\huge \bfseries Graph Neural Networks for\\Video Anomaly Detection}\\
+        
+        \vspace*{1.75cm}
+        
+        {\large Mini Project report submitted for the partial fulfillment\\}
+        {\large of the requirements for the degree of \\}
+        
+        \vspace*{1cm}
+        
+        {\it {\large Bachelor of Technology} \\
+        {\large in\\}
+        {\large Electronics and Communication Engineering \\}}
+        
+        \vfill
+        
+        \vspace*{0.5cm}
+        
+        {\large by}\\
+        
+        \vspace*{0.5cm}
+        
+        {\large \bfseries Saumilya Gupta - 23UEC618}
+        
+        \vspace*{1cm}
+        
+        {\large \bfseries Mentor \\}
+        {\large Dr. Preety Singh }
+        
+        \vfill
+        
+        \vspace*{0.5cm}
+        
+        \includegraphics[width=0.3\textwidth]{figures/LNMIIT.jpg}\\
+        
+        \vspace{1cm}
+        
+        {\bfseries\large Department of Electronics and Communication Engineering \\}
+        {\large The LNM Institute of Information Technology, Jaipur\\}
+        
+        \vspace*{1.0cm}
+        
+        {\large \today\\}
+        
+        \vfill
+        
+    \end{center}
+\end{titlepage}
+
+\pagebreak
+
+\vspace*{\fill}
+\begin{center}
+    \thispagestyle{empty}
+    {\large Copyright \copyright~The LNMIIT 2025\\}{\large All rights reserved.}
+\end{center}
+\vspace*{\fill}
+
+%------------------------------------------------------------------------------
+% Abstract
+%------------------------------------------------------------------------------
+\begin{abstract}
+\noindent
+This technical report describes a comprehensive analysis on how Dynamic Graph Neural Networks can be used for video anomaly detection in traffic surveillance situations. To address this problem, we design a Temporal Graph Neural Network (Temporal DGNN) that employs spatial GCNs on a sequence of per-frame graphs followed by temporal GRU modeling. In our experiments, we use the NiAD\_large\_graphs dataset, consisting of 1,176 video samples (842 for training, 128 for validation, 206 for test) originating from the NiAD (Night-time Accident Detection) dataset. The pipeline translates 30 frames of video data into graph objects using PyTorch Geometric, with a different number of nodes per frame determined by vehicle detection. Data augmentation (brightness, flip, spatial shift) is performed on the anomalous class in order to address issues of class imbalance. The Temporal DGNN reaches a test accuracy of \textbf{89.32\%} with an \textbf{AUC-ROC of 0.81}, showing effective learning of spatial-temporal patterns for anomaly detection. This report discusses the complete data pipeline from video processing to graph formation, mathematical foundations of GNNs, Temporal DGNN architecture, and experimental results.
+
+\vspace{0.5cm}
+\noindent\textbf{Keywords:} Graph Neural Networks, Video Anomaly Detection, Dynamic Graphs, Traffic Surveillance, Deep Learning, Temporal Modeling, PyTorch Geometric
+\end{abstract}
+
+\newpage
+
+%------------------------------------------------------------------------------
+% Table of Contents
+%------------------------------------------------------------------------------
+\tableofcontents
+\newpage
+
+%------------------------------------------------------------------------------
+% List of Figures and Tables
+%------------------------------------------------------------------------------
+\listoffigures
+\listoftables
+\newpage
+
+%------------------------------------------------------------------------------
+% Chapters
+%------------------------------------------------------------------------------
+\input{chapters/introduction}
+\input{chapters/background}
+\input{chapters/data_pipeline}
+\input{chapters/model_dynamic_gnn}
+\input{chapters/experiments}
+\input{chapters/conclusion}
+
+%------------------------------------------------------------------------------
+% Bibliography
+%------------------------------------------------------------------------------
+\begin{thebibliography}{99}
+
+\bibitem{kipf2017}
+Kipf, T. N., \& Welling, M. (2017). Semi-supervised classification with graph convolutional networks. \textit{International Conference on Learning Representations (ICLR)}.
+
+\bibitem{kazemi2020}
+Kazemi, S. M., et al. (2020). Representation learning for dynamic graphs: A survey. \textit{Journal of Machine Learning Research}, 21(70), 1-73.
+
+\bibitem{scarselli2008}
+Scarselli, F., et al. (2008). The graph neural network model. \textit{IEEE Transactions on Neural Networks}, 20(1), 61-80.
+
+\bibitem{lin2017}
+Lin, T. Y., et al. (2017). Focal loss for dense object detection. \textit{IEEE International Conference on Computer Vision (ICCV)}.
+
+\bibitem{yolov8}
+Ultralytics (2023). YOLOv8: State-of-the-art object detection. \url{https://github.com/ultralytics/ultralytics}
+
+\bibitem{pytorch_geometric}
+Fey, M., \& Lenssen, J. E. (2019). Fast graph representation learning with PyTorch Geometric. \textit{ICLR Workshop on Representation Learning on Graphs and Manifolds}.
+
+\bibitem{cho2014}
+Cho, K., et al. (2014). Learning phrase representations using RNN encoder-decoder for statistical machine translation. \textit{Conference on Empirical Methods in Natural Language Processing (EMNLP)}.
+
+\bibitem{hamilton2017}
+Hamilton, W. L., Ying, R., \& Leskovec, J. (2017). Inductive representation learning on large graphs. \textit{Advances in Neural Information Processing Systems (NeurIPS)}.
+
+\bibitem{xu2018}
+Xu, K., et al. (2018). How powerful are graph neural networks? \textit{International Conference on Learning Representations (ICLR)}.
+
+\bibitem{skarding2021}
+Skarding, J., Gabrys, B., \& Musial, K. (2021). Foundations and modeling of dynamic networks using dynamic graph neural networks: A survey. \textit{IEEE Access}, 9, 79143-79168.
+
+\end{thebibliography}
+
+\end{document}
+

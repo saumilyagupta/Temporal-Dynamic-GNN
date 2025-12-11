@@ -1,0 +1,62 @@
+# TemporalGNN Configuration for Node-Feature-Based Dynamic Graphs
+
+# Data settings
+data:
+  root_dir: "/workspace/saumilya/GNN-Research/NiAD_graphs_node_feature_based"
+  train_manifest: "train_manifest.csv"
+  val_manifest: "val_manifest.csv"
+  test_manifest: "test_manifest.csv"
+  num_workers: 0  # Set to 0 to avoid shared memory issues with .pt files
+  pin_memory: true
+  normalize_features: true
+
+# Model settings
+model:
+  # Use 'simple' for TemporalGNNSimple (matches docs.md exactly)
+  # Use 'full' for configurable TemporalGNN
+  type: "simple"
+  
+  # Settings for 'full' model (ignored if type='simple')
+  input_dim: 8
+  hidden_dim: 64
+  temporal_dim: 128
+  num_gcn_layers: 2
+  num_gru_layers: 1
+  dropout: 0.3
+  num_classes: 2
+
+# Training settings
+training:
+  gpu_id: 4  # Which GPU to use (0-7), or -1 for CPU
+  batch_size: 8
+  max_epochs: 100
+  learning_rate: 0.001
+  weight_decay: 0.00001
+  gradient_clip_val: 1.0
+  accumulate_grad_batches: 1
+  optimizer: "adam"  # 'adam' or 'adamw'
+  scheduler: "plateau"  # 'plateau' or 'cosine'
+  monitor_metric: "val_loss"
+  monitor_mode: "min"
+
+# Loss settings
+loss:
+  type: "focal"  # 'focal' or 'bce'
+  gamma: 1.0  # Focal loss focusing parameter
+  # alpha is calculated automatically from class distribution
+
+# Callbacks
+callbacks:
+  checkpoint:
+    save_top_k: 3
+    save_last: true
+    every_n_epochs: 1
+  early_stopping:
+    patience: 15
+    min_delta: 0.0001
+
+# Logging
+logging:
+  log_every_n_steps: 10
+  experiment_name: "temporal_gnn"
+

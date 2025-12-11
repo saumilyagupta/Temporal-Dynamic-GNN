@@ -1,0 +1,95 @@
+% GRU Module Diagram
+\begin{tikzpicture}[
+    node distance=1cm,
+    cell/.style={
+        rectangle,
+        rounded corners=3pt,
+        minimum width=1.5cm,
+        minimum height=1.2cm,
+        draw=black,
+        thick,
+        fill=blue!20,
+        font=\small
+    },
+    input/.style={
+        rectangle,
+        minimum width=1cm,
+        minimum height=0.6cm,
+        draw=black,
+        fill=green!20,
+        font=\tiny
+    },
+    hidden/.style={
+        rectangle,
+        minimum width=1cm,
+        minimum height=0.6cm,
+        draw=black,
+        fill=orange!20,
+        font=\tiny
+    },
+    arrow/.style={-Stealth, thick}
+]
+
+% Title
+\node[font=\bfseries] at (6, 5) {GRU Temporal Module (Unrolled)};
+
+% GRU cells
+\node[cell] (gru0) at (0, 2.5) {GRU};
+\node[cell] (gru1) at (3, 2.5) {GRU};
+\node[cell] (gru2) at (6, 2.5) {GRU};
+\node[cell] (gru3) at (9, 2.5) {GRU};
+\node[cell] (gruT) at (12, 2.5) {GRU};
+
+% Inputs
+\node[input] (x0) at (0, 0.5) {$\vect{g}^{(0)}$};
+\node[input] (x1) at (3, 0.5) {$\vect{g}^{(1)}$};
+\node[input] (x2) at (6, 0.5) {$\vect{g}^{(2)}$};
+\node[input] (x3) at (9, 0.5) {...};
+\node[input] (xT) at (12, 0.5) {$\vect{g}^{(T)}$};
+
+% Hidden states
+\node[hidden] (h0) at (0, 4.5) {$\vect{h}^{(0)}$};
+\node[hidden] (h1) at (3, 4.5) {$\vect{h}^{(1)}$};
+\node[hidden] (h2) at (6, 4.5) {$\vect{h}^{(2)}$};
+\node[hidden] (h3) at (9, 4.5) {...};
+\node[hidden] (hT) at (12, 4.5) {$\vect{h}^{(T)}$};
+
+% Input arrows
+\draw[arrow] (x0) -- (gru0);
+\draw[arrow] (x1) -- (gru1);
+\draw[arrow] (x2) -- (gru2);
+\draw[arrow] (x3) -- (gru3);
+\draw[arrow] (xT) -- (gruT);
+
+% Output arrows
+\draw[arrow] (gru0) -- (h0);
+\draw[arrow] (gru1) -- (h1);
+\draw[arrow] (gru2) -- (h2);
+\draw[arrow] (gru3) -- (h3);
+\draw[arrow] (gruT) -- (hT);
+
+% Recurrent connections
+\draw[arrow, blue!60] (gru0) -- (gru1);
+\draw[arrow, blue!60] (gru1) -- (gru2);
+\draw[arrow, blue!60] (gru2) -- (gru3);
+\draw[arrow, blue!60, dashed] (gru3) -- (gruT);
+
+% Initial hidden state
+\node[font=\tiny] at (-1.5, 2.5) {$\vect{h}_{init}$};
+\draw[arrow, gray] (-1.2, 2.5) -- (gru0);
+
+% Final output
+\node[font=\tiny, align=center] at (14, 4.5) {Final\\output};
+\draw[arrow] (hT) -- ++(1, 0);
+
+% Equations
+\node[font=\tiny, align=left] at (6, -0.8) {
+    $\vect{g}^{(t)}$ = Graph-level features from frame $t$ (after GCN + pooling)\\
+    $\vect{h}^{(t)}$ = Hidden state capturing temporal context up to frame $t$
+};
+
+\end{tikzpicture}
+
+
+
+

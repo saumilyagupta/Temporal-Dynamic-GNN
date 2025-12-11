@@ -1,0 +1,1312 @@
+[2025-11-02 14:59:28] Starting new optimization...
+[2025-11-02 14:59:29] Created new study 'gcn3d_hyperopt'
+[2025-11-02 14:59:29] Completed: 0, Total trials in DB: 0, Remaining: 100
+[2025-11-02 14:59:29] Starting optimization for 100 more trials...
+[2025-11-02 14:59:29] Trial 0 started
+[2025-11-02 14:59:29]   Parameters: {
+  "hidden_dim": 80,
+  "num_layers": 2,
+  "dropout": 0.7,
+  "pooling_type": "meanmax",
+  "batch_size": 6,
+  "learning_rate": 4.16658335443138e-06,
+  "weight_decay": 9.257673745377765e-05,
+  "patience": 10,
+  "min_delta": 1.320321041826346e-05
+}
+[2025-11-02 14:59:52] Trial 0 completed: val_acc=0.5000
+[2025-11-02 14:59:52] Trial 1 started
+[2025-11-02 14:59:52]   Parameters: {
+  "hidden_dim": 48,
+  "num_layers": 3,
+  "dropout": 0.30000000000000004,
+  "pooling_type": "max",
+  "batch_size": 6,
+  "learning_rate": 8.381195975833298e-07,
+  "weight_decay": 2.3567217979793995e-05,
+  "patience": 10,
+  "min_delta": 0.00684134453646334
+}
+[2025-11-02 15:00:14] Trial 1 completed: val_acc=0.5000
+[2025-11-02 15:00:15] Trial 2 started
+[2025-11-02 15:00:15]   Parameters: {
+  "hidden_dim": 48,
+  "num_layers": 2,
+  "dropout": 0.6,
+  "pooling_type": "max",
+  "batch_size": 5,
+  "learning_rate": 0.0005234479730533267,
+  "weight_decay": 2.3553823318536855e-07,
+  "patience": 5,
+  "min_delta": 0.0016772178453432361
+}
+[2025-11-02 15:01:07] 
+================================================================================
+[2025-11-02 15:01:07] Resuming optimization...
+[2025-11-02 15:01:08] Loaded existing study 'gcn3d_hyperopt' with 3 completed trials
+[2025-11-02 15:01:08] Completed: 2, Total trials in DB: 3, Remaining: 97
+[2025-11-02 15:01:08] Starting optimization for 97 more trials...
+[2025-11-02 15:01:08] Trial 3 started
+[2025-11-02 15:01:08]   Parameters: {
+  "hidden_dim": 96,
+  "num_layers": 3,
+  "dropout": 0.5,
+  "pooling_type": "sum",
+  "batch_size": 5,
+  "learning_rate": 1.8780338870310377e-07,
+  "weight_decay": 7.149089221972554e-06,
+  "patience": 10,
+  "min_delta": 0.0005750153265884693
+}
+[2025-11-02 15:01:30] Trial 3 completed: val_acc=0.5000
+[2025-11-02 15:01:30] Trial 4 started
+[2025-11-02 15:01:30]   Parameters: {
+  "hidden_dim": 112,
+  "num_layers": 2,
+  "dropout": 0.7,
+  "pooling_type": "sum",
+  "batch_size": 8,
+  "learning_rate": 0.00013768978591188966,
+  "weight_decay": 8.510542970602119e-07,
+  "patience": 30,
+  "min_delta": 0.0006554745488194732
+}
+[2025-11-02 15:02:32] Trial 4 completed: val_acc=0.6667
+[2025-11-02 15:02:32] Trial 5 started
+[2025-11-02 15:02:32]   Parameters: {
+  "hidden_dim": 64,
+  "num_layers": 3,
+  "dropout": 0.2,
+  "pooling_type": "sum",
+  "batch_size": 7,
+  "learning_rate": 0.0006724969496949658,
+  "weight_decay": 2.900827363360888e-06,
+  "patience": 20,
+  "min_delta": 6.849122295645497e-05
+}
+[2025-11-02 15:03:28] Trial 5 completed: val_acc=0.6667
+[2025-11-02 15:03:28] Trial 6 started
+[2025-11-02 15:03:28]   Parameters: {
+  "hidden_dim": 64,
+  "num_layers": 3,
+  "dropout": 0.30000000000000004,
+  "pooling_type": "mean",
+  "batch_size": 2,
+  "learning_rate": 2.61340453502994e-07,
+  "weight_decay": 2.7322115915712006e-06,
+  "patience": 5,
+  "min_delta": 0.00012670488326154696
+}
+[2025-11-02 15:03:41] Trial 6 completed: val_acc=0.5000
+[2025-11-02 15:03:41] Trial 7 started
+[2025-11-02 15:03:41]   Parameters: {
+  "hidden_dim": 32,
+  "num_layers": 3,
+  "dropout": 0.6,
+  "pooling_type": "mean",
+  "batch_size": 3,
+  "learning_rate": 7.96839613600818e-05,
+  "weight_decay": 4.476758250335277e-06,
+  "patience": 5,
+  "min_delta": 0.0038396788730403835
+}
+[2025-11-02 15:03:53] Trial 7 completed: val_acc=0.5000
+[2025-11-02 15:03:53] Trial 8 started
+[2025-11-02 15:03:53]   Parameters: {
+  "hidden_dim": 32,
+  "num_layers": 3,
+  "dropout": 0.1,
+  "pooling_type": "max",
+  "batch_size": 5,
+  "learning_rate": 0.00013103019853310006,
+  "weight_decay": 9.976997208545844e-06,
+  "patience": 15,
+  "min_delta": 0.005812342666930599
+}
+[2025-11-02 15:04:32] Trial 8 completed: val_acc=0.6667
+[2025-11-02 15:04:32] Trial 9 started
+[2025-11-02 15:04:32]   Parameters: {
+  "hidden_dim": 128,
+  "num_layers": 4,
+  "dropout": 0.5,
+  "pooling_type": "sum",
+  "batch_size": 5,
+  "learning_rate": 2.679210099028328e-07,
+  "weight_decay": 2.8542857025186806e-05,
+  "patience": 15,
+  "min_delta": 0.0054534251073123825
+}
+[2025-11-02 15:05:05] Trial 9 completed: val_acc=0.3333
+[2025-11-02 15:05:05] Trial 10 started
+[2025-11-02 15:05:05]   Parameters: {
+  "hidden_dim": 64,
+  "num_layers": 5,
+  "dropout": 0.30000000000000004,
+  "pooling_type": "mean",
+  "batch_size": 3,
+  "learning_rate": 2.1367184747277933e-06,
+  "weight_decay": 1.15006373408398e-05,
+  "patience": 20,
+  "min_delta": 0.005720432672815444
+}
+[2025-11-02 15:05:47] Trial 10 completed: val_acc=0.5000
+[2025-11-02 15:05:47] Trial 11 started
+[2025-11-02 15:05:47]   Parameters: {
+  "hidden_dim": 128,
+  "num_layers": 2,
+  "dropout": 0.7,
+  "pooling_type": "meanmax",
+  "batch_size": 8,
+  "learning_rate": 2.9981643461795846e-05,
+  "weight_decay": 2.7672154894535363e-07,
+  "patience": 30,
+  "min_delta": 0.0008484195613354303
+}
+[2025-11-02 15:06:55] Trial 11 completed: val_acc=0.5000
+[2025-11-02 15:06:55] Trial 12 started
+[2025-11-02 15:06:55]   Parameters: {
+  "hidden_dim": 96,
+  "num_layers": 2,
+  "dropout": 0.1,
+  "pooling_type": "sum",
+  "batch_size": 8,
+  "learning_rate": 0.0007612667437366968,
+  "weight_decay": 8.017050031143839e-07,
+  "patience": 30,
+  "min_delta": 7.97590663818377e-05
+}
+[2025-11-02 15:08:53] Trial 12 completed: val_acc=0.6667
+[2025-11-02 15:08:53] Trial 13 started
+[2025-11-02 15:08:53]   Parameters: {
+  "hidden_dim": 112,
+  "num_layers": 4,
+  "dropout": 0.2,
+  "pooling_type": "all",
+  "batch_size": 7,
+  "learning_rate": 0.0009977940821223378,
+  "weight_decay": 1.2074012821615045e-06,
+  "patience": 25,
+  "min_delta": 2.474400601540674e-05
+}
+[2025-11-02 15:10:38] Trial 13 completed: val_acc=0.6667
+[2025-11-02 15:10:38] Trial 14 started
+[2025-11-02 15:10:38]   Parameters: {
+  "hidden_dim": 80,
+  "num_layers": 2,
+  "dropout": 0.4,
+  "pooling_type": "sum",
+  "batch_size": 7,
+  "learning_rate": 0.00024913817145701985,
+  "weight_decay": 1.256240072556038e-07,
+  "patience": 25,
+  "min_delta": 0.00021457409388127584
+}
+[2025-11-02 15:11:37] Trial 14 completed: val_acc=0.5000
+[2025-11-02 15:11:37] Trial 15 started
+[2025-11-02 15:11:37]   Parameters: {
+  "hidden_dim": 96,
+  "num_layers": 4,
+  "dropout": 0.5,
+  "pooling_type": "sum",
+  "batch_size": 8,
+  "learning_rate": 2.35014640839287e-05,
+  "weight_decay": 1.0195999341576361e-06,
+  "patience": 25,
+  "min_delta": 0.0012034328809770339
+}
+[2025-11-02 15:12:34] Trial 15 completed: val_acc=0.5000
+[2025-11-02 15:12:34] Trial 16 started
+[2025-11-02 15:12:34]   Parameters: {
+  "hidden_dim": 64,
+  "num_layers": 2,
+  "dropout": 0.2,
+  "pooling_type": "all",
+  "batch_size": 7,
+  "learning_rate": 0.00030618688796183553,
+  "weight_decay": 3.986876513779561e-07,
+  "patience": 20,
+  "min_delta": 5.058116684900557e-05
+}
+[2025-11-02 15:13:39] Trial 16 completed: val_acc=0.6667
+[2025-11-02 15:13:39] Trial 17 started
+[2025-11-02 15:13:39]   Parameters: {
+  "hidden_dim": 112,
+  "num_layers": 5,
+  "dropout": 0.6,
+  "pooling_type": "sum",
+  "batch_size": 1,
+  "learning_rate": 3.7088558320152495e-05,
+  "weight_decay": 2.3568206048224874e-06,
+  "patience": 30,
+  "min_delta": 0.0002435523964425289
+}
+[2025-11-02 15:15:04] Trial 17 completed: val_acc=0.5000
+[2025-11-02 15:15:04] Trial 18 started
+[2025-11-02 15:15:04]   Parameters: {
+  "hidden_dim": 48,
+  "num_layers": 2,
+  "dropout": 0.4,
+  "pooling_type": "sum",
+  "batch_size": 6,
+  "learning_rate": 0.0003534242601323421,
+  "weight_decay": 3.900957757350302e-07,
+  "patience": 20,
+  "min_delta": 0.0018636432623369867
+}
+[2025-11-02 15:15:50] Trial 18 completed: val_acc=0.5000
+[2025-11-02 15:15:50] Trial 19 started
+[2025-11-02 15:15:50]   Parameters: {
+  "hidden_dim": 112,
+  "num_layers": 3,
+  "dropout": 0.2,
+  "pooling_type": "sum",
+  "batch_size": 4,
+  "learning_rate": 9.995427262689892e-05,
+  "weight_decay": 1.8032251973986099e-06,
+  "patience": 25,
+  "min_delta": 0.00035681452966508496
+}
+[2025-11-02 15:16:56] Trial 19 completed: val_acc=0.6667
+[2025-11-02 15:16:56] Trial 20 started
+[2025-11-02 15:16:56]   Parameters: {
+  "hidden_dim": 48,
+  "num_layers": 4,
+  "dropout": 0.6,
+  "pooling_type": "meanmax",
+  "batch_size": 7,
+  "learning_rate": 9.467166221631924e-06,
+  "weight_decay": 1.0509245736998361e-07,
+  "patience": 15,
+  "min_delta": 3.338622779751144e-05
+}
+[2025-11-02 15:17:52] Trial 20 completed: val_acc=0.6667
+[2025-11-02 15:17:52] Trial 21 started
+[2025-11-02 15:17:52]   Parameters: {
+  "hidden_dim": 80,
+  "num_layers": 2,
+  "dropout": 0.1,
+  "pooling_type": "max",
+  "batch_size": 8,
+  "learning_rate": 0.00036611501444745314,
+  "weight_decay": 5.973446171058171e-07,
+  "patience": 30,
+  "min_delta": 0.00011612933205921285
+}
+[2025-11-02 15:19:00] Trial 21 completed: val_acc=0.6667
+[2025-11-02 15:19:00] Trial 22 started
+[2025-11-02 15:19:00]   Parameters: {
+  "hidden_dim": 32,
+  "num_layers": 3,
+  "dropout": 0.1,
+  "pooling_type": "max",
+  "batch_size": 4,
+  "learning_rate": 0.0001342542686706758,
+  "weight_decay": 5.8189076599684935e-06,
+  "patience": 15,
+  "min_delta": 0.002388760371827362
+}
+[2025-11-02 15:19:44] Trial 22 completed: val_acc=0.6667
+[2025-11-02 15:19:44] Trial 23 started
+[2025-11-02 15:19:44]   Parameters: {
+  "hidden_dim": 32,
+  "num_layers": 3,
+  "dropout": 0.2,
+  "pooling_type": "max",
+  "batch_size": 6,
+  "learning_rate": 5.9209849217551574e-05,
+  "weight_decay": 1.4883175130079903e-05,
+  "patience": 20,
+  "min_delta": 0.0005590280490094995
+}
+[2025-11-02 15:20:30] Trial 23 completed: val_acc=0.5000
+[2025-11-02 15:20:30] Trial 24 started
+[2025-11-02 15:20:30]   Parameters: {
+  "hidden_dim": 48,
+  "num_layers": 3,
+  "dropout": 0.1,
+  "pooling_type": "max",
+  "batch_size": 5,
+  "learning_rate": 0.0001584456796189244,
+  "weight_decay": 3.759265882820455e-06,
+  "patience": 15,
+  "min_delta": 0.009974515327865039
+}
+[2025-11-02 15:21:27] Trial 24 completed: val_acc=0.6667
+[2025-11-02 15:21:27] Trial 25 started
+[2025-11-02 15:21:27]   Parameters: {
+  "hidden_dim": 64,
+  "num_layers": 4,
+  "dropout": 0.30000000000000004,
+  "pooling_type": "all",
+  "batch_size": 7,
+  "learning_rate": 1.3235649528779369e-05,
+  "weight_decay": 5.7049958332298855e-05,
+  "patience": 10,
+  "min_delta": 0.0018020857920125184
+}
+[2025-11-02 15:21:52] Trial 25 completed: val_acc=0.5000
+[2025-11-02 15:21:52] Trial 26 started
+[2025-11-02 15:21:52]   Parameters: {
+  "hidden_dim": 80,
+  "num_layers": 3,
+  "dropout": 0.2,
+  "pooling_type": "max",
+  "batch_size": 8,
+  "learning_rate": 0.0004722242840575904,
+  "weight_decay": 8.969823348265079e-06,
+  "patience": 25,
+  "min_delta": 1.315021218695201e-05
+}
+[2025-11-02 15:22:50] Trial 26 completed: val_acc=0.6667
+[2025-11-02 15:22:51] Trial 27 started
+[2025-11-02 15:22:51]   Parameters: {
+  "hidden_dim": 32,
+  "num_layers": 2,
+  "dropout": 0.1,
+  "pooling_type": "sum",
+  "batch_size": 6,
+  "learning_rate": 0.00017812887763736578,
+  "weight_decay": 1.6527387803248057e-06,
+  "patience": 20,
+  "min_delta": 0.0029677724108542803
+}
+[2025-11-02 15:24:19] Trial 27 completed: val_acc=0.8333
+[2025-11-02 15:24:19] Trial 28 started
+[2025-11-02 15:24:19]   Parameters: {
+  "hidden_dim": 96,
+  "num_layers": 2,
+  "dropout": 0.4,
+  "pooling_type": "sum",
+  "batch_size": 6,
+  "learning_rate": 0.0005553613231353429,
+  "weight_decay": 1.5510972265768768e-06,
+  "patience": 20,
+  "min_delta": 0.0003999499636157208
+}
+[2025-11-02 15:25:16] Trial 28 completed: val_acc=0.6667
+[2025-11-02 15:25:16] Trial 29 started
+[2025-11-02 15:25:16]   Parameters: {
+  "hidden_dim": 48,
+  "num_layers": 2,
+  "dropout": 0.7,
+  "pooling_type": "sum",
+  "batch_size": 7,
+  "learning_rate": 0.0002073902845177648,
+  "weight_decay": 2.0800138285985151e-07,
+  "patience": 25,
+  "min_delta": 0.0010533620296247178
+}
+[2025-11-02 15:26:13] Trial 29 completed: val_acc=0.5000
+[2025-11-02 15:26:14] Trial 30 started
+[2025-11-02 15:26:14]   Parameters: {
+  "hidden_dim": 80,
+  "num_layers": 2,
+  "dropout": 0.2,
+  "pooling_type": "sum",
+  "batch_size": 6,
+  "learning_rate": 4.981164324067406e-05,
+  "weight_decay": 6.571197657646548e-07,
+  "patience": 20,
+  "min_delta": 0.002566370371460197
+}
+[2025-11-02 15:27:00] Trial 30 completed: val_acc=0.5000
+[2025-11-02 15:27:00] Trial 31 started
+[2025-11-02 15:27:00]   Parameters: {
+  "hidden_dim": 128,
+  "num_layers": 2,
+  "dropout": 0.30000000000000004,
+  "pooling_type": "meanmax",
+  "batch_size": 8,
+  "learning_rate": 4.393835957591298e-06,
+  "weight_decay": 2.0163252162020153e-06,
+  "patience": 30,
+  "min_delta": 0.00018262835773070758
+}
+[2025-11-02 15:28:11] Trial 31 completed: val_acc=0.5000
+[2025-11-02 15:28:11] Trial 32 started
+[2025-11-02 15:28:11]   Parameters: {
+  "hidden_dim": 32,
+  "num_layers": 3,
+  "dropout": 0.1,
+  "pooling_type": "sum",
+  "batch_size": 5,
+  "learning_rate": 0.00011910010221755878,
+  "weight_decay": 4.558761376634277e-06,
+  "patience": 15,
+  "min_delta": 0.003549601422214246
+}
+[2025-11-02 15:28:52] Trial 32 completed: val_acc=0.6667
+[2025-11-02 15:28:52] Trial 33 started
+[2025-11-02 15:28:52]   Parameters: {
+  "hidden_dim": 32,
+  "num_layers": 2,
+  "dropout": 0.1,
+  "pooling_type": "max",
+  "batch_size": 6,
+  "learning_rate": 0.00019443040106996182,
+  "weight_decay": 1.982064909318192e-05,
+  "patience": 10,
+  "min_delta": 0.008289361768397533
+}
+[2025-11-02 15:29:37] Trial 33 completed: val_acc=0.6667
+[2025-11-02 15:29:37] Trial 34 started
+[2025-11-02 15:29:37]   Parameters: {
+  "hidden_dim": 48,
+  "num_layers": 3,
+  "dropout": 0.1,
+  "pooling_type": "sum",
+  "batch_size": 4,
+  "learning_rate": 0.0005895353489427785,
+  "weight_decay": 2.965969033016186e-06,
+  "patience": 15,
+  "min_delta": 0.0035181842805440205
+}
+[2025-11-02 15:30:09] Trial 34 completed: val_acc=0.5000
+[2025-11-02 15:30:09] Trial 35 started
+[2025-11-02 15:30:09]   Parameters: {
+  "hidden_dim": 64,
+  "num_layers": 3,
+  "dropout": 0.2,
+  "pooling_type": "mean",
+  "batch_size": 5,
+  "learning_rate": 1.6689453698052813e-05,
+  "weight_decay": 1.2770951500079562e-06,
+  "patience": 10,
+  "min_delta": 0.0006725417032530451
+}
+[2025-11-02 15:30:32] Trial 35 completed: val_acc=0.5000
+[2025-11-02 15:30:32] Trial 36 started
+[2025-11-02 15:30:32]   Parameters: {
+  "hidden_dim": 32,
+  "num_layers": 3,
+  "dropout": 0.1,
+  "pooling_type": "sum",
+  "batch_size": 7,
+  "learning_rate": 7.47364682215129e-05,
+  "weight_decay": 3.751279025099401e-05,
+  "patience": 20,
+  "min_delta": 0.0015121326007579818
+}
+[2025-11-02 15:31:35] Trial 36 completed: val_acc=0.6667
+[2025-11-02 15:31:35] Trial 37 started
+[2025-11-02 15:31:35]   Parameters: {
+  "hidden_dim": 48,
+  "num_layers": 2,
+  "dropout": 0.6,
+  "pooling_type": "max",
+  "batch_size": 6,
+  "learning_rate": 7.492870068500911e-06,
+  "weight_decay": 8.606543786406402e-06,
+  "patience": 5,
+  "min_delta": 0.0056796450681524556
+}
+[2025-11-02 15:31:48] Trial 37 completed: val_acc=0.5000
+[2025-11-02 15:31:48] Trial 38 started
+[2025-11-02 15:31:48]   Parameters: {
+  "hidden_dim": 32,
+  "num_layers": 4,
+  "dropout": 0.30000000000000004,
+  "pooling_type": "mean",
+  "batch_size": 3,
+  "learning_rate": 6.195023467070648e-07,
+  "weight_decay": 5.909613658399267e-06,
+  "patience": 15,
+  "min_delta": 2.5204741133281913e-05
+}
+[2025-11-02 15:32:19] Trial 38 completed: val_acc=0.5000
+[2025-11-02 15:32:20] Trial 39 started
+[2025-11-02 15:32:20]   Parameters: {
+  "hidden_dim": 64,
+  "num_layers": 3,
+  "dropout": 0.5,
+  "pooling_type": "meanmax",
+  "batch_size": 6,
+  "learning_rate": 1.1019557953426849e-07,
+  "weight_decay": 3.418419042172995e-06,
+  "patience": 10,
+  "min_delta": 0.004349767789135738
+}
+[2025-11-02 15:32:43] Trial 39 completed: val_acc=0.5000
+[2025-11-02 15:32:44] Trial 40 started
+[2025-11-02 15:32:44]   Parameters: {
+  "hidden_dim": 112,
+  "num_layers": 2,
+  "dropout": 0.7,
+  "pooling_type": "sum",
+  "batch_size": 5,
+  "learning_rate": 0.000998454399588131,
+  "weight_decay": 1.2673392050630825e-05,
+  "patience": 20,
+  "min_delta": 6.773680070531881e-05
+}
+[2025-11-02 15:33:26] Trial 40 completed: val_acc=0.5000
+[2025-11-02 15:33:26] Trial 41 started
+[2025-11-02 15:33:26]   Parameters: {
+  "hidden_dim": 32,
+  "num_layers": 3,
+  "dropout": 0.2,
+  "pooling_type": "all",
+  "batch_size": 7,
+  "learning_rate": 4.260223258049326e-05,
+  "weight_decay": 8.819851870950989e-07,
+  "patience": 5,
+  "min_delta": 0.00012440049030538626
+}
+[2025-11-02 15:33:48] Trial 41 completed: val_acc=0.6667
+[2025-11-02 15:33:48] Trial 42 started
+[2025-11-02 15:33:48]   Parameters: {
+  "hidden_dim": 96,
+  "num_layers": 2,
+  "dropout": 0.1,
+  "pooling_type": "sum",
+  "batch_size": 8,
+  "learning_rate": 0.0006587792636132411,
+  "weight_decay": 5.344808692845967e-07,
+  "patience": 30,
+  "min_delta": 5.3109323997955624e-05
+}
+[2025-11-02 15:35:02] Trial 42 completed: val_acc=0.6667
+[2025-11-02 15:35:02] Trial 43 started
+[2025-11-02 15:35:02]   Parameters: {
+  "hidden_dim": 96,
+  "num_layers": 2,
+  "dropout": 0.1,
+  "pooling_type": "sum",
+  "batch_size": 8,
+  "learning_rate": 0.0008555015930348655,
+  "weight_decay": 7.706363338875396e-07,
+  "patience": 30,
+  "min_delta": 8.45078249699701e-05
+}
+[2025-11-02 15:36:22] Trial 43 completed: val_acc=0.6667
+[2025-11-02 15:36:22] Trial 44 started
+[2025-11-02 15:36:22]   Parameters: {
+  "hidden_dim": 112,
+  "num_layers": 2,
+  "dropout": 0.1,
+  "pooling_type": "sum",
+  "batch_size": 8,
+  "learning_rate": 0.00025868015125662773,
+  "weight_decay": 1.4425040195832735e-06,
+  "patience": 25,
+  "min_delta": 0.0001615924284785247
+}
+[2025-11-02 15:37:49] Trial 44 completed: val_acc=0.6667
+[2025-11-02 15:37:50] Trial 45 started
+[2025-11-02 15:37:50]   Parameters: {
+  "hidden_dim": 96,
+  "num_layers": 2,
+  "dropout": 0.2,
+  "pooling_type": "sum",
+  "batch_size": 7,
+  "learning_rate": 0.00040585812201552,
+  "weight_decay": 9.639882285304233e-05,
+  "patience": 30,
+  "min_delta": 9.231538169240202e-05
+}
+[2025-11-02 15:39:15] Trial 45 completed: val_acc=0.6667
+[2025-11-02 15:39:15] Trial 46 started
+[2025-11-02 15:39:15]   Parameters: {
+  "hidden_dim": 96,
+  "num_layers": 5,
+  "dropout": 0.1,
+  "pooling_type": "sum",
+  "batch_size": 7,
+  "learning_rate": 0.00010070226773534271,
+  "weight_decay": 2.3854229414462675e-06,
+  "patience": 25,
+  "min_delta": 4.100655348257957e-05
+}
+[2025-11-02 15:40:25] Trial 46 completed: val_acc=0.6667
+[2025-11-02 15:40:25] Trial 47 started
+[2025-11-02 15:40:25]   Parameters: {
+  "hidden_dim": 112,
+  "num_layers": 2,
+  "dropout": 0.30000000000000004,
+  "pooling_type": "mean",
+  "batch_size": 8,
+  "learning_rate": 0.00017222945609066004,
+  "weight_decay": 2.3617251544681252e-07,
+  "patience": 30,
+  "min_delta": 1.0143230602968989e-05
+}
+[2025-11-02 15:41:36] Trial 47 completed: val_acc=0.6667
+[2025-11-02 15:41:36] Trial 48 started
+[2025-11-02 15:41:36]   Parameters: {
+  "hidden_dim": 80,
+  "num_layers": 3,
+  "dropout": 0.2,
+  "pooling_type": "sum",
+  "batch_size": 7,
+  "learning_rate": 0.0002487252276371438,
+  "weight_decay": 1.0537755891274431e-06,
+  "patience": 25,
+  "min_delta": 0.00024410029819936754
+}
+[2025-11-02 15:42:35] Trial 48 completed: val_acc=0.6667
+[2025-11-02 15:42:36] Trial 49 started
+[2025-11-02 15:42:36]   Parameters: {
+  "hidden_dim": 128,
+  "num_layers": 4,
+  "dropout": 0.1,
+  "pooling_type": "sum",
+  "batch_size": 8,
+  "learning_rate": 2.6194779701217684e-05,
+  "weight_decay": 3.942893325445656e-07,
+  "patience": 20,
+  "min_delta": 2.0924931008612944e-05
+}
+[2025-11-02 15:43:34] Trial 49 completed: val_acc=0.6667
+[2025-11-02 15:43:34] Trial 50 started
+[2025-11-02 15:43:34]   Parameters: {
+  "hidden_dim": 112,
+  "num_layers": 2,
+  "dropout": 0.4,
+  "pooling_type": "all",
+  "batch_size": 4,
+  "learning_rate": 0.0007120315324398261,
+  "weight_decay": 1.8871772651280467e-06,
+  "patience": 15,
+  "min_delta": 0.00047297036133689673
+}
+[2025-11-02 15:44:34] Trial 50 completed: val_acc=0.6667
+[2025-11-02 15:44:34] Trial 51 started
+[2025-11-02 15:44:34]   Parameters: {
+  "hidden_dim": 48,
+  "num_layers": 3,
+  "dropout": 0.2,
+  "pooling_type": "meanmax",
+  "batch_size": 1,
+  "learning_rate": 1.6745999617894243e-06,
+  "weight_decay": 4.726406168854369e-06,
+  "patience": 25,
+  "min_delta": 0.0008082289417953879
+}
+[2025-11-02 15:45:39] Trial 51 completed: val_acc=0.6667
+[2025-11-02 15:45:39] Trial 52 started
+[2025-11-02 15:45:39]   Parameters: {
+  "hidden_dim": 112,
+  "num_layers": 4,
+  "dropout": 0.2,
+  "pooling_type": "all",
+  "batch_size": 7,
+  "learning_rate": 0.0009592935848457742,
+  "weight_decay": 1.0816247722385709e-06,
+  "patience": 25,
+  "min_delta": 2.1744331448251576e-05
+}
+[2025-11-02 15:47:09] Trial 52 completed: val_acc=0.6667
+[2025-11-02 15:47:10] Trial 53 started
+[2025-11-02 15:47:10]   Parameters: {
+  "hidden_dim": 128,
+  "num_layers": 4,
+  "dropout": 0.1,
+  "pooling_type": "all",
+  "batch_size": 6,
+  "learning_rate": 0.00039229255363104973,
+  "weight_decay": 1.3465203415379002e-06,
+  "patience": 30,
+  "min_delta": 3.169790814026761e-05
+}
+[2025-11-02 15:49:29] Trial 53 completed: val_acc=0.8333
+[2025-11-02 15:49:29] Trial 54 started
+[2025-11-02 15:49:29]   Parameters: {
+  "hidden_dim": 128,
+  "num_layers": 4,
+  "dropout": 0.1,
+  "pooling_type": "all",
+  "batch_size": 6,
+  "learning_rate": 0.0003823290360487817,
+  "weight_decay": 5.151010557129002e-07,
+  "patience": 30,
+  "min_delta": 3.0202851483340735e-05
+}
+[2025-11-02 15:50:58] Trial 54 completed: val_acc=0.6667
+[2025-11-02 15:50:58] Trial 55 started
+[2025-11-02 15:50:58]   Parameters: {
+  "hidden_dim": 128,
+  "num_layers": 4,
+  "dropout": 0.5,
+  "pooling_type": "all",
+  "batch_size": 5,
+  "learning_rate": 0.0002833809130537313,
+  "weight_decay": 8.121001943553864e-07,
+  "patience": 30,
+  "min_delta": 6.210782678807349e-05
+}
+[2025-11-02 15:52:31] Trial 55 completed: val_acc=0.6667
+[2025-11-02 15:52:31] Trial 56 started
+[2025-11-02 15:52:31]   Parameters: {
+  "hidden_dim": 128,
+  "num_layers": 5,
+  "dropout": 0.1,
+  "pooling_type": "max",
+  "batch_size": 6,
+  "learning_rate": 7.01545281525989e-05,
+  "weight_decay": 2.5840451875368332e-06,
+  "patience": 30,
+  "min_delta": 0.006863397708222948
+}
+[2025-11-02 15:53:35] Trial 56 completed: val_acc=0.5000
+[2025-11-02 15:53:35] Trial 57 started
+[2025-11-02 15:53:35]   Parameters: {
+  "hidden_dim": 112,
+  "num_layers": 4,
+  "dropout": 0.1,
+  "pooling_type": "sum",
+  "batch_size": 5,
+  "learning_rate": 0.0004714778973495573,
+  "weight_decay": 1.4339792945766662e-06,
+  "patience": 30,
+  "min_delta": 1.697443260511461e-05
+}
+[2025-11-02 15:54:44] Trial 57 completed: val_acc=0.6667
+[2025-11-02 15:54:44] Trial 58 started
+[2025-11-02 15:54:44]   Parameters: {
+  "hidden_dim": 96,
+  "num_layers": 2,
+  "dropout": 0.1,
+  "pooling_type": "all",
+  "batch_size": 8,
+  "learning_rate": 0.00012125278018619805,
+  "weight_decay": 2.0938870333998083e-06,
+  "patience": 20,
+  "min_delta": 0.0002907125610032885
+}
+[2025-11-02 15:56:18] Trial 58 completed: val_acc=0.8333
+[2025-11-02 15:56:18] Trial 59 started
+[2025-11-02 15:56:18]   Parameters: {
+  "hidden_dim": 80,
+  "num_layers": 3,
+  "dropout": 0.6,
+  "pooling_type": "all",
+  "batch_size": 8,
+  "learning_rate": 0.00014484804316717577,
+  "weight_decay": 3.3143793907264595e-06,
+  "patience": 20,
+  "min_delta": 0.0003141068400341881
+}
+[2025-11-02 15:57:03] Trial 59 completed: val_acc=0.5000
+[2025-11-02 15:57:03] Trial 60 started
+[2025-11-02 15:57:03]   Parameters: {
+  "hidden_dim": 32,
+  "num_layers": 2,
+  "dropout": 0.30000000000000004,
+  "pooling_type": "all",
+  "batch_size": 2,
+  "learning_rate": 9.634618268678354e-05,
+  "weight_decay": 1.8949593781309546e-06,
+  "patience": 20,
+  "min_delta": 0.002435629200937214
+}
+[2025-11-02 15:57:53] Trial 60 completed: val_acc=0.8333
+[2025-11-02 15:57:53] Trial 61 started
+[2025-11-02 15:57:53]   Parameters: {
+  "hidden_dim": 128,
+  "num_layers": 2,
+  "dropout": 0.30000000000000004,
+  "pooling_type": "all",
+  "batch_size": 2,
+  "learning_rate": 8.316926326167131e-05,
+  "weight_decay": 1.8138276195085739e-06,
+  "patience": 20,
+  "min_delta": 0.0013986180403592887
+}
+[2025-11-02 15:58:43] Trial 61 completed: val_acc=0.6667
+[2025-11-02 15:58:43] Trial 62 started
+[2025-11-02 15:58:43]   Parameters: {
+  "hidden_dim": 32,
+  "num_layers": 2,
+  "dropout": 0.30000000000000004,
+  "pooling_type": "all",
+  "batch_size": 1,
+  "learning_rate": 0.00010681033110321802,
+  "weight_decay": 2.0700828351541917e-06,
+  "patience": 15,
+  "min_delta": 0.002733020943100615
+}
+[2025-11-02 15:59:57] Trial 62 completed: val_acc=0.6667
+[2025-11-02 15:59:57] Trial 63 started
+[2025-11-02 15:59:57]   Parameters: {
+  "hidden_dim": 32,
+  "num_layers": 2,
+  "dropout": 0.2,
+  "pooling_type": "all",
+  "batch_size": 2,
+  "learning_rate": 5.4951328847114276e-05,
+  "weight_decay": 3.822614083338485e-06,
+  "patience": 20,
+  "min_delta": 0.004688184100842041
+}
+[2025-11-02 16:00:53] Trial 63 completed: val_acc=0.6667
+[2025-11-02 16:00:53] Trial 64 started
+[2025-11-02 16:00:53]   Parameters: {
+  "hidden_dim": 48,
+  "num_layers": 2,
+  "dropout": 0.4,
+  "pooling_type": "all",
+  "batch_size": 3,
+  "learning_rate": 3.533639062003632e-05,
+  "weight_decay": 2.6161442502883017e-06,
+  "patience": 20,
+  "min_delta": 0.0019348955320486329
+}
+[2025-11-02 16:01:38] Trial 64 completed: val_acc=0.6667
+[2025-11-02 16:01:39] Trial 65 started
+[2025-11-02 16:01:39]   Parameters: {
+  "hidden_dim": 64,
+  "num_layers": 2,
+  "dropout": 0.1,
+  "pooling_type": "all",
+  "batch_size": 6,
+  "learning_rate": 0.00019549101694447545,
+  "weight_decay": 5.688854958785089e-06,
+  "patience": 20,
+  "min_delta": 0.002953283667539519
+}
+[2025-11-02 16:02:37] Trial 65 completed: val_acc=0.6667
+[2025-11-02 16:02:37] Trial 66 started
+[2025-11-02 16:02:37]   Parameters: {
+  "hidden_dim": 32,
+  "num_layers": 2,
+  "dropout": 0.2,
+  "pooling_type": "max",
+  "batch_size": 7,
+  "learning_rate": 0.00014665016775981633,
+  "weight_decay": 1.5514643598113772e-06,
+  "patience": 15,
+  "min_delta": 0.0010636601563108756
+}
+[2025-11-02 16:03:11] Trial 66 completed: val_acc=0.5000
+[2025-11-02 16:03:11] Trial 67 started
+[2025-11-02 16:03:11]   Parameters: {
+  "hidden_dim": 48,
+  "num_layers": 3,
+  "dropout": 0.1,
+  "pooling_type": "all",
+  "batch_size": 4,
+  "learning_rate": 0.000280627353315882,
+  "weight_decay": 1.2285142505279378e-06,
+  "patience": 20,
+  "min_delta": 4.008442152269821e-05
+}
+[2025-11-02 16:03:57] Trial 67 completed: val_acc=0.6667
+[2025-11-02 16:03:57] Trial 68 started
+[2025-11-02 16:03:57]   Parameters: {
+  "hidden_dim": 32,
+  "num_layers": 2,
+  "dropout": 0.2,
+  "pooling_type": "all",
+  "batch_size": 6,
+  "learning_rate": 0.00035387832232357334,
+  "weight_decay": 6.57906301369004e-07,
+  "patience": 15,
+  "min_delta": 0.002000625600146415
+}
+[2025-11-02 16:04:31] Trial 68 completed: val_acc=0.5000
+[2025-11-02 16:04:31] Trial 69 started
+[2025-11-02 16:04:31]   Parameters: {
+  "hidden_dim": 96,
+  "num_layers": 3,
+  "dropout": 0.1,
+  "pooling_type": "max",
+  "batch_size": 7,
+  "learning_rate": 1.8876497676580756e-05,
+  "weight_decay": 7.776821660582351e-06,
+  "patience": 25,
+  "min_delta": 0.0006889811389394907
+}
+[2025-11-02 16:05:27] Trial 69 completed: val_acc=0.5000
+[2025-11-02 16:05:27] Trial 70 started
+[2025-11-02 16:05:27]   Parameters: {
+  "hidden_dim": 32,
+  "num_layers": 4,
+  "dropout": 0.2,
+  "pooling_type": "mean",
+  "batch_size": 5,
+  "learning_rate": 8.654117858335326e-05,
+  "weight_decay": 2.1745768348210468e-06,
+  "patience": 20,
+  "min_delta": 0.00870388197322021
+}
+[2025-11-02 16:06:42] Trial 70 completed: val_acc=0.6667
+[2025-11-02 16:06:42] Trial 71 started
+[2025-11-02 16:06:42]   Parameters: {
+  "hidden_dim": 48,
+  "num_layers": 2,
+  "dropout": 0.4,
+  "pooling_type": "meanmax",
+  "batch_size": 8,
+  "learning_rate": 0.00020511709768841307,
+  "weight_decay": 9.304522160886496e-07,
+  "patience": 20,
+  "min_delta": 0.006009025284068295
+}
+[2025-11-02 16:07:38] Trial 71 completed: val_acc=0.8333
+[2025-11-02 16:07:38] Trial 72 started
+[2025-11-02 16:07:38]   Parameters: {
+  "hidden_dim": 48,
+  "num_layers": 2,
+  "dropout": 0.7,
+  "pooling_type": "meanmax",
+  "batch_size": 8,
+  "learning_rate": 0.000219876744529211,
+  "weight_decay": 9.667362795202953e-07,
+  "patience": 20,
+  "min_delta": 0.00619132838254904
+}
+[2025-11-02 16:08:23] Trial 72 completed: val_acc=0.5000
+[2025-11-02 16:08:23] Trial 73 started
+[2025-11-02 16:08:23]   Parameters: {
+  "hidden_dim": 64,
+  "num_layers": 2,
+  "dropout": 0.5,
+  "pooling_type": "meanmax",
+  "batch_size": 8,
+  "learning_rate": 0.00012027127856208791,
+  "weight_decay": 1.6516484812945536e-06,
+  "patience": 20,
+  "min_delta": 0.004199960412321475
+}
+[2025-11-02 16:09:47] Trial 73 completed: val_acc=0.6667
+[2025-11-02 16:09:47] Trial 74 started
+[2025-11-02 16:09:47]   Parameters: {
+  "hidden_dim": 32,
+  "num_layers": 2,
+  "dropout": 0.30000000000000004,
+  "pooling_type": "meanmax",
+  "batch_size": 7,
+  "learning_rate": 0.0005154426480547768,
+  "weight_decay": 1.1935477762139956e-06,
+  "patience": 20,
+  "min_delta": 0.0032586474932559807
+}
+[2025-11-02 16:10:32] Trial 74 completed: val_acc=0.5000
+[2025-11-02 16:10:32] Trial 75 started
+[2025-11-02 16:10:32]   Parameters: {
+  "hidden_dim": 64,
+  "num_layers": 2,
+  "dropout": 0.6,
+  "pooling_type": "meanmax",
+  "batch_size": 8,
+  "learning_rate": 0.00017347556047560817,
+  "weight_decay": 2.874072978342326e-06,
+  "patience": 15,
+  "min_delta": 0.004976151969299806
+}
+[2025-11-02 16:11:12] Trial 75 completed: val_acc=0.6667
+[2025-11-02 16:11:12] Trial 76 started
+[2025-11-02 16:11:12]   Parameters: {
+  "hidden_dim": 32,
+  "num_layers": 2,
+  "dropout": 0.4,
+  "pooling_type": "all",
+  "batch_size": 7,
+  "learning_rate": 5.9531798228318286e-05,
+  "weight_decay": 6.952296841276335e-07,
+  "patience": 25,
+  "min_delta": 0.00755925681767341
+}
+[2025-11-02 16:12:34] Trial 76 completed: val_acc=0.6667
+[2025-11-02 16:12:34] Trial 77 started
+[2025-11-02 16:12:34]   Parameters: {
+  "hidden_dim": 48,
+  "num_layers": 2,
+  "dropout": 0.1,
+  "pooling_type": "max",
+  "batch_size": 8,
+  "learning_rate": 0.00031546444373202313,
+  "weight_decay": 4.799749111054849e-07,
+  "patience": 15,
+  "min_delta": 0.002472061286731425
+}
+[2025-11-02 16:13:10] Trial 77 completed: val_acc=0.6667
+[2025-11-02 16:13:10] Trial 78 started
+[2025-11-02 16:13:10]   Parameters: {
+  "hidden_dim": 32,
+  "num_layers": 2,
+  "dropout": 0.1,
+  "pooling_type": "sum",
+  "batch_size": 4,
+  "learning_rate": 0.00012149382380792008,
+  "weight_decay": 3.145232817134271e-07,
+  "patience": 20,
+  "min_delta": 0.00015243452178205158
+}
+[2025-11-02 16:14:32] Trial 78 completed: val_acc=0.8333
+[2025-11-02 16:14:32] Trial 79 started
+[2025-11-02 16:14:32]   Parameters: {
+  "hidden_dim": 32,
+  "num_layers": 2,
+  "dropout": 0.1,
+  "pooling_type": "sum",
+  "batch_size": 3,
+  "learning_rate": 0.00045032089493957404,
+  "weight_decay": 2.601198830928878e-07,
+  "patience": 20,
+  "min_delta": 0.00011185228391876801
+}
+[2025-11-02 16:15:24] Trial 79 completed: val_acc=0.6667
+[2025-11-02 16:15:25] Trial 80 started
+[2025-11-02 16:15:25]   Parameters: {
+  "hidden_dim": 80,
+  "num_layers": 2,
+  "dropout": 0.30000000000000004,
+  "pooling_type": "sum",
+  "batch_size": 2,
+  "learning_rate": 0.0006526556104377014,
+  "weight_decay": 1.3568125534706528e-06,
+  "patience": 20,
+  "min_delta": 0.0001515594700963447
+}
+[2025-11-02 16:16:13] Trial 80 completed: val_acc=0.6667
+[2025-11-02 16:16:13] Trial 81 started
+[2025-11-02 16:16:13]   Parameters: {
+  "hidden_dim": 48,
+  "num_layers": 2,
+  "dropout": 0.2,
+  "pooling_type": "sum",
+  "batch_size": 8,
+  "learning_rate": 0.00013408501239393184,
+  "weight_decay": 1.5530712089898925e-07,
+  "patience": 25,
+  "min_delta": 0.0002794121186845365
+}
+[2025-11-02 16:17:10] Trial 81 completed: val_acc=0.6667
+[2025-11-02 16:17:10] Trial 82 started
+[2025-11-02 16:17:10]   Parameters: {
+  "hidden_dim": 32,
+  "num_layers": 2,
+  "dropout": 0.1,
+  "pooling_type": "sum",
+  "batch_size": 4,
+  "learning_rate": 0.00010932975851396409,
+  "weight_decay": 1.752483103797863e-07,
+  "patience": 20,
+  "min_delta": 0.00019262168897777842
+}
+[2025-11-02 16:17:50] Trial 82 completed: val_acc=0.5000
+[2025-11-02 16:17:51] Trial 83 started
+[2025-11-02 16:17:51]   Parameters: {
+  "hidden_dim": 32,
+  "num_layers": 2,
+  "dropout": 0.1,
+  "pooling_type": "sum",
+  "batch_size": 5,
+  "learning_rate": 0.0001930587139762597,
+  "weight_decay": 2.956896682211555e-07,
+  "patience": 20,
+  "min_delta": 9.81328533689119e-05
+}
+[2025-11-02 16:18:55] Trial 83 completed: val_acc=0.6667
+[2025-11-02 16:18:55] Trial 84 started
+[2025-11-02 16:18:55]   Parameters: {
+  "hidden_dim": 32,
+  "num_layers": 3,
+  "dropout": 0.1,
+  "pooling_type": "meanmax",
+  "batch_size": 6,
+  "learning_rate": 7.225543291929765e-05,
+  "weight_decay": 4.12495595674473e-06,
+  "patience": 15,
+  "min_delta": 0.00037050202469632966
+}
+[2025-11-02 16:19:28] Trial 84 completed: val_acc=0.5000
+[2025-11-02 16:19:28] Trial 85 started
+[2025-11-02 16:19:28]   Parameters: {
+  "hidden_dim": 32,
+  "num_layers": 2,
+  "dropout": 0.1,
+  "pooling_type": "sum",
+  "batch_size": 6,
+  "learning_rate": 4.3470656048588856e-05,
+  "weight_decay": 3.386064310976334e-07,
+  "patience": 20,
+  "min_delta": 0.0005009541075231607
+}
+[2025-11-02 16:20:12] Trial 85 completed: val_acc=0.5000
+[2025-11-02 16:20:13] Trial 86 started
+[2025-11-02 16:20:13]   Parameters: {
+  "hidden_dim": 48,
+  "num_layers": 2,
+  "dropout": 0.1,
+  "pooling_type": "mean",
+  "batch_size": 8,
+  "learning_rate": 0.00022677941430697686,
+  "weight_decay": 2.7219406975742533e-05,
+  "patience": 20,
+  "min_delta": 0.00967029810555775
+}
+[2025-11-02 16:21:14] Trial 86 completed: val_acc=0.8333
+[2025-11-02 16:21:15] Trial 87 started
+[2025-11-02 16:21:15]   Parameters: {
+  "hidden_dim": 48,
+  "num_layers": 2,
+  "dropout": 0.5,
+  "pooling_type": "mean",
+  "batch_size": 8,
+  "learning_rate": 0.00022714369402618325,
+  "weight_decay": 7.347166486502704e-05,
+  "patience": 20,
+  "min_delta": 0.00913096323524484
+}
+[2025-11-02 16:21:57] Trial 87 completed: val_acc=0.5000
+[2025-11-02 16:21:58] Trial 88 started
+[2025-11-02 16:21:58]   Parameters: {
+  "hidden_dim": 64,
+  "num_layers": 2,
+  "dropout": 0.1,
+  "pooling_type": "all",
+  "batch_size": 8,
+  "learning_rate": 0.0003342255946178981,
+  "weight_decay": 1.8290995540333446e-06,
+  "patience": 25,
+  "min_delta": 7.16905629340875e-05
+}
+[2025-11-02 16:23:18] Trial 88 completed: val_acc=0.6667
+[2025-11-02 16:23:18] Trial 89 started
+[2025-11-02 16:23:18]   Parameters: {
+  "hidden_dim": 48,
+  "num_layers": 2,
+  "dropout": 0.1,
+  "pooling_type": "mean",
+  "batch_size": 8,
+  "learning_rate": 0.0001540903349983819,
+  "weight_decay": 3.958849017168218e-05,
+  "patience": 20,
+  "min_delta": 0.006533717160948831
+}
+[2025-11-02 16:24:18] Trial 89 completed: val_acc=0.6667
+[2025-11-02 16:24:18] Trial 90 started
+[2025-11-02 16:24:18]   Parameters: {
+  "hidden_dim": 96,
+  "num_layers": 5,
+  "dropout": 0.2,
+  "pooling_type": "mean",
+  "batch_size": 7,
+  "learning_rate": 0.0007604345743982202,
+  "weight_decay": 1.8422277871423073e-05,
+  "patience": 20,
+  "min_delta": 0.0001431385208082535
+}
+[2025-11-02 16:25:03] Trial 90 completed: val_acc=0.5000
+[2025-11-02 16:25:03] Trial 91 started
+[2025-11-02 16:25:03]   Parameters: {
+  "hidden_dim": 48,
+  "num_layers": 2,
+  "dropout": 0.2,
+  "pooling_type": "mean",
+  "batch_size": 8,
+  "learning_rate": 9.189212223514716e-05,
+  "weight_decay": 3.0945242483780334e-06,
+  "patience": 25,
+  "min_delta": 5.450239880859474e-05
+}
+[2025-11-02 16:25:51] Trial 91 completed: val_acc=0.6667
+[2025-11-02 16:25:52] Trial 92 started
+[2025-11-02 16:25:52]   Parameters: {
+  "hidden_dim": 32,
+  "num_layers": 2,
+  "dropout": 0.1,
+  "pooling_type": "sum",
+  "batch_size": 4,
+  "learning_rate": 0.00025896952292353255,
+  "weight_decay": 2.2520363301492583e-05,
+  "patience": 20,
+  "min_delta": 0.005719667860517969
+}
+[2025-11-02 16:26:37] Trial 92 completed: val_acc=0.6667
+[2025-11-02 16:26:38] Trial 93 started
+[2025-11-02 16:26:38]   Parameters: {
+  "hidden_dim": 112,
+  "num_layers": 3,
+  "dropout": 0.1,
+  "pooling_type": "max",
+  "batch_size": 7,
+  "learning_rate": 0.00018322730149005455,
+  "weight_decay": 9.356724707440045e-07,
+  "patience": 15,
+  "min_delta": 0.007574200720191824
+}
+[2025-11-02 16:27:19] Trial 93 completed: val_acc=0.6667
+[2025-11-02 16:27:19] Trial 94 started
+[2025-11-02 16:27:19]   Parameters: {
+  "hidden_dim": 32,
+  "num_layers": 2,
+  "dropout": 0.1,
+  "pooling_type": "sum",
+  "batch_size": 5,
+  "learning_rate": 0.00013113288705660285,
+  "weight_decay": 9.597606438248776e-06,
+  "patience": 20,
+  "min_delta": 0.00023727733583625132
+}
+[2025-11-02 16:28:10] Trial 94 completed: val_acc=0.6667
+[2025-11-02 16:28:10] Trial 95 started
+[2025-11-02 16:28:10]   Parameters: {
+  "hidden_dim": 64,
+  "num_layers": 4,
+  "dropout": 0.7,
+  "pooling_type": "all",
+  "batch_size": 8,
+  "learning_rate": 0.0005378306642698382,
+  "weight_decay": 1.4793620141356089e-05,
+  "patience": 10,
+  "min_delta": 0.009962857594819656
+}
+[2025-11-02 16:28:31] Trial 95 completed: val_acc=0.5000
+[2025-11-02 16:28:31] Trial 96 started
+[2025-11-02 16:28:31]   Parameters: {
+  "hidden_dim": 48,
+  "num_layers": 2,
+  "dropout": 0.1,
+  "pooling_type": "mean",
+  "batch_size": 7,
+  "learning_rate": 6.844267233867058e-05,
+  "weight_decay": 4.5559910456313174e-05,
+  "patience": 20,
+  "min_delta": 0.005336390545082545
+}
+[2025-11-02 16:29:31] Trial 96 completed: val_acc=0.6667
+[2025-11-02 16:29:31] Trial 97 started
+[2025-11-02 16:29:31]   Parameters: {
+  "hidden_dim": 32,
+  "num_layers": 2,
+  "dropout": 0.30000000000000004,
+  "pooling_type": "meanmax",
+  "batch_size": 1,
+  "learning_rate": 0.00039864982798371317,
+  "weight_decay": 2.8729431160004403e-05,
+  "patience": 20,
+  "min_delta": 0.001594995521420974
+}
+[2025-11-02 16:30:23] Trial 97 completed: val_acc=0.8333
+[2025-11-02 16:30:23] Trial 98 started
+[2025-11-02 16:30:23]   Parameters: {
+  "hidden_dim": 80,
+  "num_layers": 2,
+  "dropout": 0.30000000000000004,
+  "pooling_type": "meanmax",
+  "batch_size": 1,
+  "learning_rate": 0.00039559399200019506,
+  "weight_decay": 3.4366098655947983e-05,
+  "patience": 20,
+  "min_delta": 0.001532738605131115
+}
+[2025-11-02 16:31:27] Trial 98 completed: val_acc=0.6667
+[2025-11-02 16:31:27] Trial 99 started
+[2025-11-02 16:31:27]   Parameters: {
+  "hidden_dim": 128,
+  "num_layers": 2,
+  "dropout": 0.4,
+  "pooling_type": "meanmax",
+  "batch_size": 1,
+  "learning_rate": 0.00023764265835513293,
+  "weight_decay": 2.2160405911996283e-06,
+  "patience": 20,
+  "min_delta": 0.002149990775760577
+}
+[2025-11-02 16:32:17] Trial 99 completed: val_acc=0.6667
+[2025-11-02 16:32:17] Optimization completed!
+[2025-11-02 18:02:14] Best config saved to /workspace/saumilya/GNN-Research/gnn_3d_anomaly_detection/hyperopt/best_config.json
+[2025-11-02 18:02:14] Best trial: 27, Best val_acc: 0.8333

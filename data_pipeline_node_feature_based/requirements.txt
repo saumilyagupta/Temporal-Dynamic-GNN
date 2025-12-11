@@ -1,0 +1,18 @@
+# Data Pipeline Node Feature Based - Requirements
+# PyTorch and PyTorch Geometric
+torch>=2.0.0
+torch-geometric>=2.4.0
+
+# YOLO for vehicle detection
+ultralytics>=8.0.0
+
+# Computer Vision
+opencv-python>=4.8.0
+
+# Numerical computing
+numpy>=1.24.0
+scipy>=1.11.0
+
+# Progress bars (optional but useful)
+tqdm>=4.65.0
+

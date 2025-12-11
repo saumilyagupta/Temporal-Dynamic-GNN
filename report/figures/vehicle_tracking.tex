@@ -1,0 +1,81 @@
+% Vehicle Tracking Diagram
+\begin{tikzpicture}[
+    frame/.style={
+        rectangle,
+        draw=black,
+        rounded corners,
+        minimum width=3cm,
+        minimum height=2.5cm,
+        fill=gray!10
+    },
+    vehicle/.style={
+        circle,
+        draw=black,
+        thick,
+        minimum size=0.5cm,
+        font=\tiny
+    },
+    arrow/.style={-Stealth, thick, dashed}
+]
+
+% Title
+\node[font=\bfseries] at (6, 4) {Centroid-Based Vehicle Tracking};
+
+% Frame 0
+\node[frame] (f0) at (0, 1.5) {};
+\node[font=\tiny, above] at (0, 2.9) {Frame 0};
+\node[vehicle, fill=red!40] (v0f0) at (-0.5, 2) {0};
+\node[vehicle, fill=blue!40] (v1f0) at (0.5, 2) {1};
+\node[vehicle, fill=green!40] (v2f0) at (0, 1) {2};
+
+% Frame 5
+\node[frame] (f1) at (4, 1.5) {};
+\node[font=\tiny, above] at (4, 2.9) {Frame 5};
+\node[vehicle, fill=red!40] (v0f1) at (3.3, 1.8) {0};
+\node[vehicle, fill=blue!40] (v1f1) at (4.3, 1.9) {1};
+\node[vehicle, fill=green!40] (v2f1) at (4, 1.2) {2};
+\node[vehicle, fill=orange!40] (v3f1) at (4.7, 1) {3};
+
+% Frame 10
+\node[frame] (f2) at (8, 1.5) {};
+\node[font=\tiny, above] at (8, 2.9) {Frame 10};
+\node[vehicle, fill=red!40] (v0f2) at (7.2, 1.5) {0};
+\node[vehicle, fill=green!40] (v2f2) at (8.2, 1.8) {2};
+\node[vehicle, fill=orange!40] (v3f2) at (8.5, 1) {3};
+
+% Frame 15
+\node[frame] (f3) at (12, 1.5) {};
+\node[font=\tiny, above] at (12, 2.9) {Frame 15};
+\node[vehicle, fill=green!40] (v2f3) at (11.5, 2) {2};
+\node[vehicle, fill=orange!40] (v3f3) at (12.3, 1.5) {3};
+\node[vehicle, fill=purple!40] (v4f3) at (12, 0.8) {4};
+
+% Tracking lines (trajectories)
+\draw[arrow, red!60] (v0f0) -- (v0f1);
+\draw[arrow, red!60] (v0f1) -- (v0f2);
+
+\draw[arrow, blue!60] (v1f0) -- (v1f1);
+
+\draw[arrow, green!60] (v2f0) -- (v2f1);
+\draw[arrow, green!60] (v2f1) -- (v2f2);
+\draw[arrow, green!60] (v2f2) -- (v2f3);
+
+\draw[arrow, orange!60] (v3f1) -- (v3f2);
+\draw[arrow, orange!60] (v3f2) -- (v3f3);
+
+% Time arrow
+\draw[-Stealth, thick] (0, -0.3) -- (12, -0.3);
+\node[font=\tiny] at (12.3, -0.3) {time};
+
+% Legend
+\node[font=\tiny, align=left] at (6, -1) {
+    Vehicle IDs are consistent across frames\\
+    New vehicles get new IDs (3, 4)\\
+    Disappeared vehicles maintain ID if reappear within threshold
+};
+
+\end{tikzpicture}
+
+
+
+

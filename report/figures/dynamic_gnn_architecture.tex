@@ -1,0 +1,95 @@
+% Dynamic GNN Architecture Diagram
+\begin{tikzpicture}[
+    node distance=0.8cm and 1cm,
+    box/.style={
+        rectangle,
+        rounded corners=4pt,
+        minimum width=1.8cm,
+        minimum height=0.9cm,
+        align=center,
+        draw=black,
+        thick,
+        font=\small
+    },
+    frame/.style={
+        rectangle,
+        rounded corners=2pt,
+        minimum width=1.2cm,
+        minimum height=0.6cm,
+        draw=black,
+        font=\tiny,
+        fill=gray!10,
+        align=center
+    },
+    input/.style={box, fill=cyan!25},
+    gcn/.style={box, fill=green!30},
+    temporal/.style={box, fill=blue!25},
+    pool/.style={box, fill=orange!25},
+    fc/.style={box, fill=purple!25},
+    output/.style={box, fill=red!25},
+    arrow/.style={thick, -Stealth}
+]
+
+% Title
+\node[font=\large\bfseries] at (7, 7.5) {Dynamic Graph Neural Network};
+\node[font=\small] at (7, 7) {Spatial GCN + Temporal GRU};
+
+% Input frames
+\node[font=\small\bfseries] at (1.5, 6) {Input Sequence};
+\node[frame] (f0) at (0, 5) {$G^{(0)}$};
+\node[frame] (f1) at (1, 5) {$G^{(1)}$};
+\node[frame] (f2) at (2, 5) {...};
+\node[frame] (fT) at (3, 5) {$G^{(T)}$};
+
+% Per-frame GCN processing
+\node[gcn] (gcn) at (6, 5) {GCN\\Layers};
+\node[font=\tiny, align=center] at (6, 3.8) {$\times 3$ layers, 128 hidden};
+
+% Per-frame outputs
+\node[frame, fill=green!20] (h0) at (9, 5.5) {$\mat{H}^{(0)}$};
+\node[frame, fill=green!20] (h1) at (10.2, 5.5) {$\mat{H}^{(1)}$};
+\node[frame, fill=green!20] (h2) at (11.4, 5.5) {...};
+\node[frame, fill=green!20] (hT) at (12.6, 5.5) {$\mat{H}^{(T)}$};
+
+% Temporal module
+\node[temporal] (gru) at (10.8, 3.5) {GRU\\Module};
+\node[font=\tiny, align=center] at (10.8, 2.4) {2 layers, 128 hidden};
+
+% Global pooling
+\node[pool] (pool) at (10.8, 1) {Masked\\Pooling};
+
+% Classifier
+\node[fc] (fc) at (6, 1) {Classifier};
+\node[font=\tiny] at (6, 0) {$128 \to 64 \to 2$};
+
+% Output
+\node[output] (output) at (2, 1) {Output};
+\node[font=\tiny, align=center] at (2, 0) {Softmax\\Focal Loss};
+
+% Arrows - input to GCN
+\draw[arrow] (fT) -- (gcn);
+\node[font=\tiny, gray, above] at (4.5, 5.2) {per frame};
+
+% Arrows - GCN to frame outputs
+\draw[arrow] (gcn) -- (h0);
+
+% Arrows - outputs to GRU
+\draw[arrow] (h0) -- (gru);
+\draw[arrow] (h1) -- (gru);
+\draw[arrow] (hT) -- (gru);
+
+% Arrows - GRU to pooling to classifier
+\draw[arrow] (gru) -- (pool);
+\draw[arrow] (pool) -- (fc);
+\draw[arrow] (fc) -- (output);
+
+% Node masks annotation
+\node[font=\tiny, gray, align=center, fill=white, draw=gray!50, rounded corners] at (14, 1) {
+    Node masks\\for missing\\vehicles
+};
+
+% Time annotation
+\draw[arrow, gray] (0, 4.3) -- (3.5, 4.3);
+\node[font=\tiny, gray] at (1.75, 4) {$T$ frames};
+
+\end{tikzpicture}

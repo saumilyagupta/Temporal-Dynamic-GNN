@@ -1,0 +1,68 @@
+% Graph Construction Diagram
+\begin{tikzpicture}[
+    node distance=1cm,
+    vertex/.style={
+        circle,
+        draw=black,
+        thick,
+        minimum size=0.8cm,
+        font=\small,
+        align=center
+    },
+    present/.style={vertex, fill=green!40},
+    arrow/.style={-Stealth, thick}
+]
+
+% Title
+\node[font=\bfseries] at (6, 5) {Graph Construction from Detections};
+
+% Left side: Detections
+\node[font=\small\bfseries] at (1.5, 4) {Frame Detections};
+
+% Detected vehicles (only present ones)
+\node[present] (v0) at (0, 2.5) {V0};
+\node[present] (v1) at (3, 2.5) {V1};
+\node[present] (v2) at (1.5, 0.8) {V2};
+
+% Edges with distances
+\draw[thick, blue] (v0) -- node[above, font=\scriptsize] {198} (v1);
+\draw[thick, blue] (v0) -- node[left, font=\scriptsize] {155} (v2);
+\draw[thick, blue] (v1) -- node[right, font=\scriptsize] {352} (v2);
+
+% Arrow
+\draw[arrow, very thick] (4, 1.8) -- (5, 1.8);
+
+% Right side: PyG Data
+\node[font=\small\bfseries] at (9, 4) {PyG Data Object};
+
+% Data box
+\draw[thick, rounded corners] (5.5, 0.5) rectangle (12.5, 3.5);
+
+% x: node features
+\node[font=\scriptsize, anchor=west] at (5.7, 3.1) {\textbf{x} $[3, 8]$:};
+\node[font=\tiny, anchor=west] at (7.2, 3.1) {[[37, 230, 0, 215, 74, 31, 2, 0.0],};
+\node[font=\tiny, anchor=west] at (7.5, 2.8) {[175, 249, 130, 221, 91, 57, 2, 0.0],};
+\node[font=\tiny, anchor=west] at (7.5, 2.5) {[828, 410, 790, 368, 76, 84, 3, 0.0]]};
+
+% edge_index
+\node[font=\scriptsize, anchor=west] at (5.7, 2.1) {\textbf{edge\_index} $[2, 6]$:};
+\node[font=\tiny, anchor=west] at (8.2, 2.1) {[[0,0,1,1,2,2], [1,2,0,2,0,1]]};
+
+% edge_weight
+\node[font=\scriptsize, anchor=west] at (5.7, 1.7) {\textbf{edge\_weight} $[6]$:};
+\node[font=\tiny, anchor=west] at (8.2, 1.7) {[198, 155, 198, 352, 155, 352]};
+
+% node_ids
+\node[font=\scriptsize, anchor=west] at (5.7, 1.3) {\textbf{node\_ids} $[3]$:};
+\node[font=\tiny, anchor=west] at (8.2, 1.3) {[0, 1, 2]};
+
+% t
+\node[font=\scriptsize, anchor=west] at (5.7, 0.9) {\textbf{t}:};
+\node[font=\tiny, anchor=west] at (6.5, 0.9) {0 (frame index)};
+
+% Legend
+\node[present, minimum size=0.4cm] at (5, -0.2) {};
+\node[font=\scriptsize, right] at (5.3, -0.2) {Present vehicle (node)};
+\node[font=\scriptsize, blue] at (10, -0.2) {Edge = Euclidean distance};
+
+\end{tikzpicture}

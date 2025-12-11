@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<videoAnnotation>
+  <metadata>
+    <video id="17597749092467k2lluxfk" name="000600.mp4" duration="4" tagCount="2" />
+    <exportDate>2025-10-06T19:10:12.064Z</exportDate>
+    <classes>
+      <class name="Normal" color="#3b82f6" />
+      <class name="Anomalous" color="#ef4444" />
+    </classes>
+  </metadata>
+  <tags>
+    <tag startTime="0" endTime="2.539605" duration="2.539605" className="Normal" color="#3b82f6" />
+    <tag startTime="2.539605" endTime="3.972275" duration="1.4326699999999999" className="Anomalous" color="#ef4444" />
+  </tags>
+</videoAnnotation>

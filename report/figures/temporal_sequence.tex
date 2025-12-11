@@ -1,0 +1,91 @@
+% Temporal Sequence Diagram
+\begin{tikzpicture}[
+    frame/.style={
+        rectangle,
+        draw=black,
+        rounded corners,
+        minimum width=1.8cm,
+        minimum height=1.5cm,
+        fill=gray!10
+    },
+    node/.style={
+        circle,
+        draw=black,
+        minimum size=0.3cm
+    },
+    present/.style={node, fill=green!50},
+    absent/.style={node, fill=gray!30}
+]
+
+% Title
+\node[font=\bfseries] at (7, 4) {Temporal Graph Sequence (30 Frames)};
+
+% Frames
+\foreach \f/\label in {0/t=0, 1/t=5, 2/t=10, 3/t=15, 4/t=20, 5/t=25, 6/t=29} {
+    \node[frame] (f\f) at (\f*2, 2) {};
+    \node[font=\tiny, above=0.1cm of f\f] {\label};
+}
+
+% Nodes in each frame (showing presence/absence)
+% Frame 0: V0, V1, V2 present
+\node[present] at (-0.3, 2.3) {};
+\node[present] at (0.3, 2.3) {};
+\node[present] at (0, 1.7) {};
+
+% Frame 5: V0, V1, V2, V3 present
+\node[present] at (1.7, 2.3) {};
+\node[present] at (2.3, 2.3) {};
+\node[present] at (1.7, 1.7) {};
+\node[present] at (2.3, 1.7) {};
+
+% Frame 10: V0, V2, V3 present
+\node[present] at (3.7, 2.3) {};
+\node[absent] at (4.3, 2.3) {};
+\node[present] at (3.7, 1.7) {};
+\node[present] at (4.3, 1.7) {};
+
+% Frame 15: V2, V3 present
+\node[absent] at (5.7, 2.3) {};
+\node[absent] at (6.3, 2.3) {};
+\node[present] at (5.7, 1.7) {};
+\node[present] at (6.3, 1.7) {};
+
+% Frame 20: V2, V3, V4 present
+\node[absent] at (7.7, 2.3) {};
+\node[present] at (8.3, 2.3) {};
+\node[present] at (7.7, 1.7) {};
+\node[present] at (8.3, 1.7) {};
+
+% Frame 25: V3, V4 present
+\node[absent] at (9.7, 2.3) {};
+\node[present] at (10.3, 2.3) {};
+\node[absent] at (9.7, 1.7) {};
+\node[present] at (10.3, 1.7) {};
+
+% Frame 29: V4 present
+\node[absent] at (11.7, 2.3) {};
+\node[present] at (12.3, 2.3) {};
+\node[absent] at (11.7, 1.7) {};
+\node[absent] at (12.3, 1.7) {};
+
+% Time arrow
+\draw[-Stealth, thick] (0, 0.5) -- (13, 0.5);
+\node[font=\tiny] at (13.3, 0.5) {time};
+
+% Legend
+\node[present, minimum size=0.25cm] at (4, 0) {};
+\node[font=\tiny, right] at (4.2, 0) {Present};
+\node[absent, minimum size=0.25cm] at (7, 0) {};
+\node[font=\tiny, right] at (7.2, 0) {Absent (masked)};
+
+% Note
+\node[font=\tiny, align=center, fill=yellow!10, rounded corners] at (7, -0.7) {
+    Fixed matrix size $N$ across all frames\\
+    Absent vehicles marked with $-\infty$ and mask=0
+};
+
+\end{tikzpicture}
+
+
+
+

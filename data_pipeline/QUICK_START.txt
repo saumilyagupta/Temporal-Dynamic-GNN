@@ -1,0 +1,143 @@
+================================================================================
+                     DATA PIPELINE - QUICK START GUIDE
+================================================================================
+
+LOCATION: /workspace/saumilya/GNN-Research/data_pipeline/
+
+FILES:
+  ├── main.py                    Main script to run (EDIT CONFIG HERE)
+  ├── video_cropper.py          Video cropping module
+  ├── vehicle_processor.py      Vehicle detection & graph generation
+  ├── data_splitter.py          Train/val/test splitting
+  ├── utils.py                  Utility functions
+  ├── test_load_data.py         Example: how to load data
+  ├── README.md                  Full documentation
+  ├── PIPELINE_SUMMARY.md        Implementation details
+  └── QUICK_START.txt            This file
+
+================================================================================
+STEP 1: EDIT CONFIGURATION
+================================================================================
+
+Open main.py and edit the CONFIG dictionary:
+
+CONFIG = {
+    'tagged_video_folder': '/workspace/saumilya/GNN-Research/sample_tagged_video',
+    'output_folder': '/workspace/saumilya/GNN-Research/output_pipeline',
+    'train_ratio': 0.70,
+    'val_ratio': 0.15,
+    'test_ratio': 0.15,
+    'random_seed': 42,
+    'yolo_model': 'yolov8n.pt',
+    'detection_conf': 0.3,
+    'vehicle_classes': [2, 3, 5, 7]  # car, motorcycle, bus, truck
+}
+
+================================================================================
+STEP 2: RUN PIPELINE
+================================================================================
+
+cd /workspace/saumilya/GNN-Research/data_pipeline
+python main.py
+
+This will:
+  1. Discover video-JSON pairs
+  2. Split videos into train/val/test (by source video)
+  3. Crop videos into clips
+  4. Detect and track vehicles
+  5. Generate temporal graphs
+  6. Organize into folder structure
+  7. Create CSV manifests
+
+================================================================================
+STEP 3: CHECK OUTPUT
+================================================================================
+
+Output structure:
+
+output_pipeline/
+├── train/
+│   ├── Normal/
+│   │   └── {video}_{class}_{clip}/
+│   │       ├── raw_video.mp4              Original clip
+│   │       ├── visualization_video.mp4    With bounding boxes & edges
+│   │       └── temporal_graphs.h5         HDF5 temporal graphs
+│   └── Anomalous/
+├── val/
+├── test/
+├── train_manifest.csv     List of train videos with labels
+├── val_manifest.csv       List of val videos with labels
+└── test_manifest.csv      List of test videos with labels
+
+================================================================================
+STEP 4: LOAD DATA FOR TRAINING
+================================================================================
+
+Example Python code:
+
+import pandas as pd
+import h5py
+import torch
+
+# Load manifest
+df = pd.read_csv('output_pipeline/train_manifest.csv')
+
+# Get first video
+video_folder = df.iloc[0]['video_folder_path']
+label = df.iloc[0]['label']
+
+# Load temporal graphs
+h5_path = f"{video_folder}/temporal_graphs.h5"
+
+with h5py.File(h5_path, 'r') as f:
+    # Load frame 10
+    nodes = torch.tensor(f['graphs/t_0010/node_features'][:])
+    edges = torch.tensor(f['graphs/t_0010/edge_index'][:])
+    edge_feat = torch.tensor(f['graphs/t_0010/edge_features'][:])
+
+See test_load_data.py for complete example.
+
+================================================================================
+HDF5 DATA FORMAT
+================================================================================
+
+/graphs/t_XXXX/node_features [N, 6]
+  Column 0: x-coordinate (centroid)
+  Column 1: y-coordinate (centroid)
+  Column 2: bounding box width
+  Column 3: bounding box height
+  Column 4: timestamp (seconds)
+  Column 5: vehicle_id
+
+/graphs/t_XXXX/edge_index [2, E]
+  Row 0: source node indices
+  Row 1: target node indices
+  Complete graph: all vehicles connected
+
+/graphs/t_XXXX/edge_features [E, 3]
+  Column 0: distance between centroids
+  Column 1: frame number
+  Column 2: timestamp (seconds)
+
+================================================================================
+KEY FEATURES
+================================================================================
+
+✓ Video-based splitting (no data leakage)
+✓ Complete graphs (all vehicles connected)
+✓ Temporal consistency (vehicle IDs maintained)
+✓ Distance-based edges
+✓ HDF5 efficient storage
+✓ PyTorch-ready tensors
+✓ CSV manifests for easy iteration
+
+================================================================================
+NEED HELP?
+================================================================================
+
+1. Read README.md for full documentation
+2. Check PIPELINE_SUMMARY.md for implementation details
+3. Run test_load_data.py to see example data loading
+4. Modify CONFIG in main.py to adjust parameters
+
+================================================================================

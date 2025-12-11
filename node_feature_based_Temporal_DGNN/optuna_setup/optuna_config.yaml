@@ -1,0 +1,124 @@
+# Optuna Hyperparameter Optimization Configuration
+# Goal: Improve Precision and F1 Score for Anomaly Detection
+
+# Data settings (same as main config)
+data:
+  root_dir: "/workspace/saumilya/GNN-Research/NiAD_graphs_node_feature_based"
+  train_manifest: "train_manifest.csv"
+  val_manifest: "val_manifest.csv"
+  test_manifest: "test_manifest.csv"
+  num_workers: 0
+  pin_memory: true
+  normalize_features: true
+
+# Optuna Study Settings
+study:
+  name: "temporal_gnn_f1_optimization"
+  direction: "maximize"  # Maximize F1 score
+  n_trials: 100
+  timeout: null  # No timeout (set in hours if needed, e.g., 24 for 24 hours)
+  storage: "sqlite:///optuna_study.db"  # Persistent storage
+  load_if_exists: true  # Resume study if exists
+  
+  # Sampler configuration
+  sampler:
+    type: "tpe"  # TPESampler for efficient search
+    seed: 42
+    n_startup_trials: 10  # Random trials before TPE kicks in
+  
+  # Pruner configuration (early stopping for bad trials)
+  pruner:
+    type: "median"
+    n_startup_trials: 5
+    n_warmup_steps: 10  # Epochs before pruning can happen
+    interval_steps: 1
+
+# Search Space Definitions
+search_space:
+  # Model architecture
+  model:
+    hidden_dim:
+      type: "categorical"
+      choices: [32, 64, 128, 256]
+    temporal_dim:
+      type: "categorical"
+      choices: [64, 128, 256]
+    num_gcn_layers:
+      type: "int"
+      low: 1
+      high: 4
+    num_gru_layers:
+      type: "int"
+      low: 1
+      high: 3
+    dropout:
+      type: "float"
+      low: 0.1
+      high: 0.5
+      step: 0.05
+  
+  # Training hyperparameters
+  training:
+    learning_rate:
+      type: "loguniform"
+      low: 1e-5
+      high: 1e-2
+    weight_decay:
+      type: "loguniform"
+      low: 1e-6
+      high: 1e-3
+    batch_size:
+      type: "categorical"
+      choices: [4, 8, 16]
+    optimizer:
+      type: "categorical"
+      choices: ["adam", "adamw"]
+  
+  # Loss function
+  loss:
+    focal_gamma:
+      type: "float"
+      low: 0.5
+      high: 3.0
+      step: 0.25
+    # Alpha is computed from class distribution, but can be tuned
+    alpha_multiplier:
+      type: "float"
+      low: 0.8
+      high: 1.2
+      step: 0.05
+  
+  # Classification threshold (for precision/recall trade-off)
+  threshold:
+    type: "float"
+    low: 0.3
+    high: 0.7
+    step: 0.05
+
+# Training settings for each trial
+trial_training:
+  max_epochs: 50  # Reduced for faster HPO
+  patience: 10  # Early stopping patience
+  gpu_id: 4  # Which GPU to use
+  gradient_clip_val: 1.0
+
+# Optimization objective
+objective:
+  # Primary metric to optimize
+  primary_metric: "val_f1"
+  
+  # Optional: weighted combination of metrics
+  # If use_weighted=true, optimizes: w1*f1 + w2*precision + w3*recall
+  use_weighted: false
+  weights:
+    f1: 0.5
+    precision: 0.3
+    recall: 0.2
+
+# Logging
+logging:
+  log_dir: "optuna_logs"
+  save_best_n: 5  # Save top N trial checkpoints
+  verbose: true
+
+

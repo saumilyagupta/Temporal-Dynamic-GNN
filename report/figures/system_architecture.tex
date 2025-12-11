@@ -1,0 +1,76 @@
+% System Architecture Diagram
+\begin{tikzpicture}[
+    node distance=0.8cm and 1.2cm,
+    box/.style={
+        rectangle,
+        rounded corners=4pt,
+        minimum width=2cm,
+        minimum height=1cm,
+        align=center,
+        draw=black,
+        thick,
+        font=\small
+    },
+    input/.style={box, fill=cyan!20},
+    process/.style={box, fill=green!20},
+    model/.style={box, fill=orange!20},
+    output/.style={box, fill=red!20},
+    data/.style={box, fill=purple!20},
+    arrow/.style={-Stealth, thick},
+    labeltext/.style={font=\tiny, gray}
+]
+
+% Title
+\node[font=\large\bfseries] at (6, 5.5) {End-to-End System Architecture};
+
+% Input Stage
+\node[input] (video) at (0, 3) {Video Input};
+\node[labeltext] at (0, 2.2) {30 frames};
+
+% Detection Stage
+\node[process] (yolo) at (2.5, 3) {YOLOv8};
+\node[labeltext] at (2.5, 2.2) {Detection};
+
+% Tracking Stage
+\node[process] (tracking) at (5, 3) {Vehicle\\Tracking};
+\node[labeltext] at (5, 2.2) {Centroid-based};
+
+% Graph Construction
+\node[process] (graph) at (7.5, 3) {Graph\\Construction};
+\node[labeltext] at (7.5, 2.2) {Per-frame graphs};
+
+% Storage
+\node[data] (storage) at (10, 3) {PyG .pt\\Files};
+\node[labeltext] at (10, 2.2) {30 files/video};
+
+% Model
+\node[model] (model) at (10, 0.5) {Temporal DGNN};
+\node[labeltext] at (10, -0.3) {GCN + GRU};
+
+% Output
+\node[output] (output) at (13, 3) {Anomaly\\Prediction};
+\node[labeltext] at (13, 2.2) {Normal/Anomalous};
+
+% Arrows - Main flow
+\draw[arrow] (video) -- (yolo);
+\draw[arrow] (yolo) -- (tracking);
+\draw[arrow] (tracking) -- (graph);
+\draw[arrow] (graph) -- (storage);
+
+% Model path
+\draw[arrow, gray] (storage.south) -- (model.north);
+\draw[arrow, gray] (model.east) -- ++(0.5, 0) |- (output.south);
+
+% Flow labels
+\node[font=\tiny, fill=white] at (1.25, 3.3) {Frames};
+\node[font=\tiny, fill=white] at (3.75, 3.3) {Boxes};
+\node[font=\tiny, fill=white] at (6.25, 3.3) {IDs};
+\node[font=\tiny, fill=white] at (8.75, 3.3) {Graphs};
+
+% Stage labels
+\node[font=\scriptsize\itshape, gray] at (0, 4.2) {Input};
+\node[font=\scriptsize\itshape, gray] at (5, 4.2) {Data Pipeline};
+\node[font=\scriptsize\itshape, gray] at (10, -0.8) {Model};
+\node[font=\scriptsize\itshape, gray] at (13, 4.2) {Output};
+
+\end{tikzpicture}

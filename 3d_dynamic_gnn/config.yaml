@@ -1,0 +1,60 @@
+# Dataset Configuration
+data:
+  root_dir: "/workspace/saumilya/GNN-Research/NiAD_Large_Videos_processed_graphs"
+  train_manifest: "train_manifest.csv"
+  val_manifest: "val_manifest.csv"
+  test_manifest: "test_manifest.csv"
+  num_workers: 0  # Set to 0 to avoid "too many open files" error with HDF5
+  pin_memory: true
+
+# Model Configuration
+model:
+  input_dim: 8  # Node feature dimension
+  hidden_dim: 128
+  num_gcn_layers: 3
+  num_temporal_layers: 2
+  temporal_type: "gru"  # Options: "gru", "lstm", "tcn"
+  dropout: 0.3
+  use_residual: true
+
+# Training Configuration
+training:
+  batch_size: 8
+  learning_rate: 0.0001  # 1e-4
+  weight_decay: 0.00001  # 1e-5
+  max_epochs: 100
+  gradient_clip_val: 1.0
+  accumulate_grad_batches: 1
+  monitor_metric: "val_loss"
+  monitor_mode: "min"
+  device: "cuda:4"  # GPU device to use (e.g., "cuda:0", "cuda:4", "cpu")
+
+# Loss Configuration
+loss:
+  type: "bce"  # Options: "focal", "bce"
+  gamma: 2.0   # Only used for focal loss
+  # alpha/pos_weight will be calculated from training set class distribution
+
+# Callbacks Configuration
+callbacks:
+  checkpoint:
+    save_top_k: 3
+    save_last: true
+    every_n_epochs: 1
+  early_stopping:
+    patience: 15
+    min_delta: 0.001
+
+# Logging Configuration
+logging:
+  log_dir: "./logs"
+  name: "dynamic_gnn"
+  version: null  # Auto-increment
+  log_every_n_steps: 10
+
+# Evaluation Configuration
+evaluation:
+  output_dir: "./results"
+  save_predictions: true
+  save_confusion_matrix: true
+

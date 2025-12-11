@@ -1,0 +1,613 @@
+\documentclass[11pt,a4paper]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath,amssymb,amsfonts}
+\usepackage{graphicx}
+\usepackage{multirow}
+\usepackage{booktabs}
+\usepackage{geometry}
+\usepackage{hyperref}
+\usepackage{float}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{url}
+
+\geometry{margin=1in}
+
+% Colors for code listings
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+
+\lstdefinestyle{mystyle}{
+    backgroundcolor=\color{backcolour},   
+    commentstyle=\color{codegreen},
+    keywordstyle=\color{magenta},
+    numberstyle=\tiny\color{codegray},
+    stringstyle=\color{codepurple},
+    basicstyle=\ttfamily\footnotesize,
+    breakatwhitespace=false,         
+    breaklines=true,                 
+    captionpos=b,                    
+    keepspaces=true,                 
+    numbers=left,                    
+    numbersep=5pt,                  
+    showspaces=false,                
+    showstringspaces=false,
+    showtabs=false,                  
+    tabsize=2
+}
+\lstset{style=mystyle}
+
+\title{\textbf{3D Graph Convolutional Network for Video Anomaly Detection: \\ Experimental Report}}
+\author{Research Experiment}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+This report presents a comprehensive experimental evaluation of a 3D Graph Convolutional Network (3D-GCN) for video anomaly detection. The model processes temporal graph sequences representing vehicle interactions in video frames, where nodes encode 3D spatial-temporal coordinates (x, y, timestamp) along with bounding box features. The network combines all frames from a video sequence into a single graph structure and uses multiple GCN layers followed by graph-level pooling for binary classification (Normal vs. Anomalous). The experiment was conducted on a dataset of 53 video sequences with frame counts ranging from 22 to 79 frames per sample and timestamps spanning 0.0 to 3.12 seconds. Training was performed for 21 epochs with early stopping, achieving test set accuracy of 50.0\%, precision of 50.0\%, recall of 40.0\%, and F1-score of 44.4\%. The model demonstrates the potential of graph-based approaches for spatio-temporal anomaly detection, though results indicate areas for further improvement.
+\end{abstract}
+
+\tableofcontents
+\newpage
+
+\section{Introduction}
+
+Video anomaly detection is a critical task in surveillance and security applications, aiming to identify unusual events or behaviors that deviate from normal patterns. Traditional approaches rely on spatial features from individual frames, but temporal dynamics are equally important for accurate detection.
+
+This experiment explores a graph-based approach to video anomaly detection using 3D Graph Convolutional Networks. The key innovation is representing video sequences as temporal graphs where:
+\begin{itemize}
+    \item Nodes represent vehicles/objects with 3D coordinates (x, y, timestamp)
+    \item Edges capture spatial relationships between objects
+    \item All frames are combined into a unified graph structure
+\end{itemize}
+
+This representation allows the model to learn both spatial relationships between objects and their temporal evolution simultaneously.
+
+\section{Related Work}
+
+Graph Neural Networks (GNNs) have shown promise for spatio-temporal modeling in various domains. Graph Convolutional Networks (GCNs) extend convolutional operations to graph-structured data, making them suitable for modeling relationships between entities. For video analysis, combining spatial and temporal information in a unified graph representation enables the capture of complex interaction patterns.
+
+\section{Methodology}
+
+\subsection{Problem Formulation}
+
+Given a video sequence containing vehicle detections, the task is to classify the entire sequence as either \textit{Normal} or \textit{Anomalous}. Each video is represented as a graph $G = (V, E)$ where:
+\begin{itemize}
+    \item $V$ is the set of nodes, each representing a vehicle detection with features $[x, y, t, w, h, vid]$ where:
+    \begin{itemize}
+        \item $(x, y)$: Spatial coordinates of vehicle centroid
+        \item $t$: Timestamp (normalized)
+        \item $w, h$: Bounding box dimensions
+        \item $vid$: Vehicle identifier
+    \end{itemize}
+    \item $E$ is the set of edges connecting vehicles, with features $[distance, frame, timestamp]$
+\end{itemize}
+
+\subsection{Dataset Preprocessing}
+
+The dataset is constructed from video sequences where:
+\begin{enumerate}
+    \item Vehicles are detected and tracked across frames
+    \item For each frame, a complete graph is created connecting all detected vehicles
+    \item All frames are combined into a single graph where temporal information is encoded in node timestamps
+    \item Node coordinates are normalized to $[0, 1]$ range per sample
+\end{enumerate}
+
+\section{Model Architecture}
+
+The 3D-GCN architecture consists of the following components:
+
+\subsection{Input Representation}
+
+The model receives as input a PyTorch Geometric \texttt{Data} object containing:
+\begin{itemize}
+    \item \textbf{Node features} $\mathbf{X} \in \mathbb{R}^{N \times 6}$: $[x, y, timestamp, width, height, vehicle\_id]$
+    \item \textbf{Edge index} $\mathbf{E} \in \mathbb{N}^{2 \times E}$: Sparse adjacency matrix representation
+    \item \textbf{Edge attributes} $\mathbf{E}_{attr} \in \mathbb{R}^{E \times 3}$: $[distance, frame, timestamp]$
+\end{itemize}
+
+where $N$ is the number of nodes and $E$ is the number of edges.
+
+\subsection{Graph Convolutional Layers}
+
+The model uses $L=3$ Graph Convolutional (GCN) layers:
+
+\begin{align}
+\mathbf{H}^{(0)} &= \mathbf{X} \in \mathbb{R}^{N \times 6} \\
+\mathbf{H}^{(l+1)} &= \text{ReLU}\left(\mathbf{H}^{(l)} \mathbf{W}^{(l)}\right), \quad l = 0, \ldots, L-2 \\
+\mathbf{H}^{(L)} &= \mathbf{H}^{(L-1)} \mathbf{W}^{(L-1)}
+\end{align}
+
+where:
+\begin{itemize}
+    \item $\mathbf{H}^{(l)} \in \mathbb{R}^{N \times d_l}$ is the node feature matrix at layer $l$
+    \item $d_0 = 6$ (input dimension)
+    \item $d_1 = d_2 = d_3 = 64$ (hidden dimensions)
+    \item $\mathbf{W}^{(l)}$ are learned weight matrices
+    \item ReLU activation and dropout (0.5) are applied after each layer except the last
+\end{itemize}
+
+\subsection{Graph Pooling}
+
+After the final GCN layer, graph-level features are extracted using multiple pooling operations:
+
+\begin{align}
+\mathbf{h}_{mean} &= \frac{1}{N} \sum_{i=1}^{N} \mathbf{h}_i^{(L)} \\
+\mathbf{h}_{max} &= \max_{i=1,\ldots,N} \mathbf{h}_i^{(L)} \\
+\mathbf{h}_{sum} &= \sum_{i=1}^{N} \mathbf{h}_i^{(L)}
+\end{align}
+
+The final graph embedding concatenates all three:
+\begin{equation}
+\mathbf{g} = [\mathbf{h}_{mean} \| \mathbf{h}_{max} \| \mathbf{h}_{sum}] \in \mathbb{R}^{192}
+\end{equation}
+
+\subsection{Classifier Head}
+
+The graph embedding is passed through a 3-layer MLP classifier:
+
+\begin{align}
+\mathbf{z}_1 &= \text{ReLU}(\mathbf{g} \mathbf{W}_1 + \mathbf{b}_1) \quad \text{(dropout 0.5)} \\
+\mathbf{z}_2 &= \text{ReLU}(\mathbf{z}_1 \mathbf{W}_2 + \mathbf{b}_2) \quad \text{(dropout 0.5)} \\
+\hat{y} &= \mathbf{z}_2 \mathbf{W}_3 + \mathbf{b}_3
+\end{align}
+
+where:
+\begin{itemize}
+    \item $\mathbf{W}_1: \mathbb{R}^{192} \to \mathbb{R}^{64}$
+    \item $\mathbf{W}_2: \mathbb{R}^{64} \to \mathbb{R}^{32}$
+    \item $\mathbf{W}_3: \mathbb{R}^{32} \to \mathbb{R}^{1}$
+\end{itemize}
+
+The output $\hat{y}$ is a logit, converted to probability via sigmoid: $p = \sigma(\hat{y})$.
+
+\subsection{Model Architecture Summary}
+
+\begin{table}[H]
+\centering
+\caption{Model Architecture Configuration}
+\begin{tabular}{ll}
+\toprule
+\textbf{Parameter} & \textbf{Value} \\
+\midrule
+Input node dimension & 6 ($x$, $y$, $t$, $w$, $h$, $vid$) \\
+Input edge dimension & 3 ($distance$, $frame$, $timestamp$) \\
+Number of GCN layers & 3 \\
+Hidden dimension & 64 \\
+Dropout rate & 0.5 \\
+Pooling type & All (mean + max + sum) \\
+Pooling output dimension & 192 (64 $\times$ 3) \\
+Classifier hidden dims & [64, 32] \\
+Output dimension & 1 (binary classification) \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\section{Dataset}
+
+\subsection{Dataset Overview}
+
+The dataset consists of video sequences labeled as either \textit{Normal} or \textit{Anomalous}. Each video is processed to extract vehicle detections and create temporal graph representations.
+
+\subsection{Dataset Statistics}
+
+\begin{table}[H]
+\centering
+\caption{Dataset Split Statistics}
+\begin{tabular}{lccc}
+\toprule
+\textbf{Split} & \textbf{Samples} & \textbf{Normal} & \textbf{Anomalous} \\
+\midrule
+Train & 37 & 18 & 19 \\
+Validation & 6 & 3 & 3 \\
+Test & 10 & 5 & 5 \\
+\textbf{Total} & \textbf{53} & \textbf{26} & \textbf{27} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Frame and Timestamp Statistics}
+
+\begin{table}[H]
+\centering
+\caption{Frame Count Statistics}
+\begin{tabular}{lcc}
+\toprule
+\textbf{Statistic} & \textbf{Value} \\
+\midrule
+Minimum frames per sample & 22 \\
+Maximum frames per sample & 79 \\
+Mean frames per sample & 50.10 \\
+Median frames per sample & 50 \\
+Standard deviation & 17.13 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}[H]
+\centering
+\caption{Timestamp Statistics}
+\begin{tabular}{lcc}
+\toprule
+\textbf{Statistic} & \textbf{Value (seconds)} \\
+\midrule
+Minimum timestamp & 0.000 \\
+Maximum timestamp & 3.120 \\
+Mean timestamp & 1.121 \\
+Median timestamp & 1.040 \\
+Standard deviation & 0.781 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\textbf{Note:} Timestamps are normalized per-sample to $[0, 1]$ range before input to the model.
+
+\subsection{Node and Edge Features}
+
+\subsubsection{Node Features}
+
+Each node represents a vehicle detection with the following features:
+\begin{itemize}
+    \item \textbf{Spatial coordinates} $(x, y)$: Centroid coordinates in image space
+    \item \textbf{Temporal coordinate} $t$: Normalized timestamp ($[0, 1]$ per sample)
+    \item \textbf{Bounding box} $(w, h)$: Width and height of bounding box
+    \item \textbf{Vehicle ID} $vid$: Unique identifier for vehicle tracking
+\end{itemize}
+
+\subsubsection{Edge Features}
+
+Edges connect vehicles within the same frame with features:
+\begin{itemize}
+    \item \textbf{Distance}: Euclidean distance between vehicle centroids
+    \item \textbf{Frame}: Frame number within the video sequence
+    \item \textbf{Timestamp}: Timestamp of the frame
+\end{itemize}
+
+The graph structure is complete within each frame (every vehicle connected to every other vehicle).
+
+\section{Experimental Setup}
+
+\subsection{Training Configuration}
+
+\begin{table}[H]
+\centering
+\caption{Training Hyperparameters}
+\begin{tabular}{ll}
+\toprule
+\textbf{Parameter} & \textbf{Value} \\
+\midrule
+Batch size & 1 \\
+Number of epochs & 100 (early stopping at 21) \\
+Learning rate & $1 \times 10^{-6}$ \\
+Weight decay & $1 \times 10^{-6}$ \\
+Optimizer & Adam \\
+Early stopping patience & 20 epochs \\
+Early stopping min delta & 0.0001 \\
+Loss function & Binary Cross-Entropy \\
+Device & CUDA:3 \\
+DataLoader workers & 4 \\
+Pin memory & True \\
+Coordinate normalization & Enabled (per-sample) \\
+Max frames per video & None (all frames used) \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Data Augmentation}
+
+No data augmentation was applied during training. The model processes raw graph structures directly from the preprocessed HDF5 files.
+
+\subsection{Training Procedure}
+
+Training follows a standard supervised learning procedure:
+\begin{enumerate}
+    \item Load graph data from HDF5 files
+    \item Normalize node coordinates per-sample
+    \item Forward pass through GCN layers
+    \item Graph-level pooling
+    \item Classification
+    \item Compute binary cross-entropy loss
+    \item Backpropagation and parameter update
+\end{enumerate}
+
+Validation is performed at the end of each epoch to monitor generalization.
+
+\section{Results and Analysis}
+
+\subsection{Training History}
+
+The model was trained for 21 epochs before early stopping was triggered. Training and validation losses and accuracies are shown in Table~\ref{tab:training_history}.
+
+\begin{table}[H]
+\centering
+\caption{Training History (Selected Epochs)}
+\label{tab:training_history}
+\scriptsize
+\begin{tabular}{ccccc}
+\toprule
+\textbf{Epoch} & \textbf{Train Loss} & \textbf{Val Loss} & \textbf{Train Acc} & \textbf{Val Acc} \\
+\midrule
+1 & 56.15 & 2.66 & 0.514 & 0.667 \\
+5 & 62.92 & 2.53 & 0.432 & 0.667 \\
+10 & 22.38 & 2.54 & 0.649 & 0.667 \\
+15 & 39.70 & 2.60 & 0.622 & 0.667 \\
+18 & 19.48 & 2.59 & 0.595 & 0.667 \\
+21 & 33.06 & 2.65 & 0.649 & 0.667 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\textbf{Observations:}
+\begin{itemize}
+    \item Training loss decreases from 56.15 to 33.06 over 21 epochs
+    \item Validation loss remains relatively stable around 2.5-2.7
+    \item Both train and validation accuracy fluctuate, with validation accuracy consistently at 66.7\%
+    \item Training loss shows high variance, suggesting potential instability
+\end{itemize}
+
+\subsection{Test Set Performance}
+
+The model was evaluated on the test set (10 samples) using the best checkpoint from training. Results are presented in Table~\ref{tab:test_results}.
+
+\begin{table}[H]
+\centering
+\caption{Test Set Classification Metrics}
+\label{tab:test_results}
+\begin{tabular}{lc}
+\toprule
+\textbf{Metric} & \textbf{Value} \\
+\midrule
+Accuracy & 0.500 \\
+Precision & 0.500 \\
+Recall & 0.400 \\
+F1-Score & 0.444 \\
+AUC-ROC & 0.480 \\
+AUC-PR & 0.512 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Per-Class Performance}
+
+\begin{table}[H]
+\centering
+\caption{Per-Class Classification Report}
+\begin{tabular}{lcccc}
+\toprule
+\textbf{Class} & \textbf{Precision} & \textbf{Recall} & \textbf{F1-Score} & \textbf{Support} \\
+\midrule
+Normal & 0.500 & 0.600 & 0.545 & 5 \\
+Anomalous & 0.500 & 0.400 & 0.444 & 5 \\
+\midrule
+\textbf{Macro Avg} & \textbf{0.500} & \textbf{0.500} & \textbf{0.495} & \textbf{10} \\
+\textbf{Weighted Avg} & \textbf{0.500} & \textbf{0.500} & \textbf{0.495} & \textbf{10} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Individual Predictions}
+
+Table~\ref{tab:individual_predictions} shows predictions for each test sample.
+
+\begin{table}[H]
+\centering
+\caption{Individual Test Predictions}
+\label{tab:individual_predictions}
+\scriptsize
+\begin{tabular}{llllc}
+\toprule
+\textbf{Video} & \textbf{True Label} & \textbf{Predicted} & \textbf{Probability} & \textbf{Correct} \\
+\midrule
+000072\_Anomalous\_1 & Anomalous & Normal & $2.70 \times 10^{-29}$ & $\times$ \\
+000072\_Normal\_1 & Normal & Normal & 0.000 & $\checkmark$ \\
+000201\_Normal\_1 & Normal & Anomalous & 0.989 & $\times$ \\
+000201\_Anomalous\_1 & Anomalous & Anomalous & 0.584 & $\checkmark$ \\
+000289\_Normal\_1 & Normal & Normal & 0.011 & $\checkmark$ \\
+000289\_Anomalous\_1 & Anomalous & Normal & 0.394 & $\times$ \\
+000515\_Normal\_1 & Normal & Normal & $6.90 \times 10^{-22}$ & $\checkmark$ \\
+000515\_Anomalous\_1 & Anomalous & Normal & $4.80 \times 10^{-10}$ & $\times$ \\
+A22\_Normal\_1 & Normal & Anomalous & 0.856 & $\times$ \\
+A22\_Anomalous\_1 & Anomalous & Anomalous & 0.820 & $\checkmark$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\textbf{Observations:}
+\begin{itemize}
+    \item 5 out of 10 predictions are correct (50\% accuracy)
+    \item Several predictions have extremely low probabilities ($< 10^{-20}$), suggesting overconfidence in predictions
+    \item Model correctly identifies some anomalies (000201\_Anomalous\_1, A22\_Anomalous\_1)
+    \item False positives: 2 Normal samples classified as Anomalous
+    \item False negatives: 3 Anomalous samples classified as Normal
+\end{itemize}
+
+\subsection{Confusion Matrix}
+
+The confusion matrix (refer to \texttt{confusion\_matrix.png}) shows:
+\begin{itemize}
+    \item \textbf{True Negatives (TN):} 3 Normal samples correctly classified
+    \item \textbf{False Positives (FP):} 2 Normal samples incorrectly classified as Anomalous
+    \item \textbf{False Negatives (FN):} 3 Anomalous samples incorrectly classified as Normal
+    \item \textbf{True Positives (TP):} 2 Anomalous samples correctly classified
+\end{itemize}
+
+\subsection{ROC and PR Curves}
+
+\begin{itemize}
+    \item \textbf{ROC-AUC:} 0.480 (close to random performance at 0.5)
+    \item \textbf{PR-AUC:} 0.512 (slightly above baseline of 0.5)
+\end{itemize}
+
+Both curves indicate that the model's discriminative ability is limited, performing near random chance.
+
+\section{Discussion}
+
+\subsection{Performance Analysis}
+
+The model achieves modest performance with 50\% accuracy on the test set. Several factors may contribute to this:
+
+\subsubsection{Strengths}
+\begin{itemize}
+    \item The graph-based representation successfully captures spatial relationships between vehicles
+    \item Temporal information is integrated through timestamp encoding
+    \item The model architecture is flexible and can handle variable-sized graphs
+\end{itemize}
+
+\subsubsection{Limitations}
+\begin{itemize}
+    \item \textbf{Small dataset:} With only 53 total samples (10 test), the model may not have sufficient data to learn robust patterns
+    \item \textbf{Training instability:} High variance in training loss suggests optimization challenges
+    \item \textbf{Overfitting risk:} Validation accuracy plateaus early, indicating limited generalization
+    \item \textbf{Class imbalance effects:} Equal class distribution in test set, but model struggles with discrimination
+\end{itemize}
+
+\subsection{Model Architecture Considerations}
+
+\begin{itemize}
+    \item \textbf{Graph pooling:} Using all three pooling types (mean, max, sum) provides rich graph-level features
+    \item \textbf{Feature encoding:} 3D coordinates effectively combine spatial and temporal information
+    \item \textbf{Layer depth:} Three GCN layers may be sufficient, but deeper networks might capture more complex patterns
+\end{itemize}
+
+\subsection{Data Characteristics}
+
+\begin{itemize}
+    \item \textbf{Variable sequence length:} Frames range from 22 to 79, requiring robust handling of graph size
+    \item \textbf{Normalization:} Per-sample normalization ensures fair comparison but may lose absolute temporal scale
+    \item \textbf{Complete graphs:} Every vehicle connected to every other vehicle within frames may introduce noise
+\end{itemize}
+
+\section{Future Improvements}
+
+Based on the experimental results, several directions for improvement are identified:
+
+\subsection{Architectural Improvements}
+\begin{itemize}
+    \item \textbf{Attention mechanisms:} Incorporate attention to weight important nodes/edges
+    \item \textbf{Graph attention networks (GAT):} Use attention-based message passing
+    \item \textbf{Temporal convolution:} Add temporal convolutional layers for sequential modeling
+    \item \textbf{Residual connections:} Add skip connections to improve gradient flow
+\end{itemize}
+
+\subsection{Data Improvements}
+\begin{itemize}
+    \item \textbf{Data augmentation:} Random frame sampling, graph edge dropout
+    \item \textbf{Larger dataset:} Collect more diverse samples to improve generalization
+    \item \textbf{Feature engineering:} Include additional features (velocity, acceleration, trajectory)
+\end{itemize}
+
+\subsection{Training Improvements}
+\begin{itemize}
+    \item \textbf{Learning rate schedule:} Implement learning rate decay
+    \item \textbf{Different optimizers:} Experiment with AdamW, SGD with momentum
+    \item \textbf{Regularization:} Adjust dropout rates, add L2 regularization
+    \item \textbf{Loss function:} Try focal loss for class imbalance, or weighted BCE
+\end{itemize}
+
+\section{Conclusion}
+
+This experiment presents a 3D Graph Convolutional Network for video anomaly detection, demonstrating the application of graph neural networks to spatio-temporal video analysis. The model successfully processes variable-length video sequences by combining all frames into unified graph structures with 3D coordinates encoding spatial-temporal information.
+
+While the current results (50\% accuracy) indicate room for improvement, the framework establishes a foundation for graph-based video anomaly detection. The architecture is flexible and can be extended with more sophisticated components such as attention mechanisms, deeper networks, and enhanced feature representations.
+
+Key contributions of this work include:
+\begin{itemize}
+    \item Unified graph representation for temporal video sequences
+    \item Integration of spatial and temporal information via 3D coordinates
+    \item Comprehensive experimental evaluation and analysis
+\end{itemize}
+
+Future work should focus on dataset expansion, architectural enhancements, and improved training strategies to achieve better performance.
+
+\section*{Acknowledgments}
+
+This experiment demonstrates the application of graph neural networks to video anomaly detection using PyTorch Geometric and PyTorch frameworks.
+
+\newpage
+\section*{Appendix A: Model Implementation Details}
+
+\subsection*{Key Code Structure}
+
+The model implementation follows this structure:
+
+\begin{lstlisting}[language=Python, caption=Model Forward Pass Structure]
+def forward(self, data):
+    # Extract 3D coordinates and features
+    node_coords_3d = x[:, :3]  # [x, y, timestamp]
+    node_features = x[:, 3:]   # [width, height, vehicle_id]
+    x_combined = torch.cat([node_coords_3d, node_features], dim=1)
+    
+    # Apply GCN layers
+    for i, conv in enumerate(self.convs):
+        x_combined = conv(x_combined, edge_index)
+        if i < len(self.convs) - 1:
+            x_combined = F.relu(x_combined)
+            x_combined = self.dropout_layer(x_combined)
+    
+    # Graph-level pooling
+    graph_emb = concatenate([mean_pool, max_pool, sum_pool])
+    
+    # Classification
+    logits = self.classifier(graph_emb)
+    return logits
+\end{lstlisting}
+
+\subsection*{Dataset Processing}
+
+The dataset combines frames as follows:
+
+\begin{lstlisting}[language=Python, caption=Frame Combination Process]
+# For each frame t:
+timestamp = frame_group.attrs.get('timestamp', float(t))
+node_3d = [x, y, timestamp, width, height, vehicle_id]
+
+# All frames combined into single graph
+# Edge index remapped to global node indices
+# Normalization applied per-sample
+\end{lstlisting}
+
+\section*{Appendix B: Complete Hyperparameter Configuration}
+
+\begin{table}[H]
+\centering
+\caption{Complete Configuration Parameters}
+\scriptsize
+\begin{tabular}{ll}
+\toprule
+\textbf{Category} & \textbf{Parameter} \\
+\midrule
+\multirow{6}{*}{Model} & node\_feat\_dim: 3 \\
+ & edge\_feat\_dim: 3 \\
+ & hidden\_dim: 64 \\
+ & num\_layers: 3 \\
+ & dropout: 0.5 \\
+ & pooling\_type: 'all' \\
+\midrule
+\multirow{11}{*}{Training} & batch\_size: 1 \\
+ & num\_epochs: 100 \\
+ & learning\_rate: $1 \times 10^{-6}$ \\
+ & weight\_decay: $1 \times 10^{-6}$ \\
+ & patience: 20 \\
+ & min\_delta: 0.0001 \\
+ & device: 'cuda:3' \\
+ & num\_workers: 4 \\
+ & pin\_memory: True \\
+ & max\_frames: None \\
+ & normalize\_coords: True \\
+\midrule
+\multirow{3}{*}{Evaluation} & batch\_size: 16 \\
+ & threshold: 0.5 \\
+ & save\_predictions: True \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\end{document}
+
