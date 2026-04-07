@@ -72,17 +72,20 @@ class TemporalGNNLightning(pl.LightningModule):
         self.test_labels = None
         self.test_probabilities = None
     
-    def forward(self, graphs_list: List) -> torch.Tensor:
+    def forward(self, batch) -> torch.Tensor:
         """Forward pass through the model."""
-        return self.model(graphs_list)
+        return self.model(batch)
     
     def training_step(self, batch: tuple, batch_idx: int) -> torch.Tensor:
         """Training step."""
-        graphs_list, labels = batch
-        batch_size = len(graphs_list)
+        graphs_batch, labels = batch
+        # Find B by using PyG batch attributes: batch.batch.max() + 1 gives total graphs = B * T
+        # Assuming T=50 for logging batch size
+        T = graphs_batch.t.max().item() + 1 if hasattr(graphs_batch, 't') else 50
+        batch_size = (graphs_batch.batch.max().item() + 1) // T
         
         # Forward pass
-        logits = self.forward(graphs_list)
+        logits = self.forward(graphs_batch)
         
         # Compute loss
         loss = self.criterion(logits, labels)
@@ -108,11 +111,12 @@ class TemporalGNNLightning(pl.LightningModule):
     
     def validation_step(self, batch: tuple, batch_idx: int) -> torch.Tensor:
         """Validation step."""
-        graphs_list, labels = batch
-        batch_size = len(graphs_list)
+        graphs_batch, labels = batch
+        T = graphs_batch.t.max().item() + 1 if hasattr(graphs_batch, 't') else 50
+        batch_size = (graphs_batch.batch.max().item() + 1) // T
         
         # Forward pass
-        logits = self.forward(graphs_list)
+        logits = self.forward(graphs_batch)
         
         # Compute loss
         loss = self.criterion(logits, labels)
@@ -138,11 +142,12 @@ class TemporalGNNLightning(pl.LightningModule):
     
     def test_step(self, batch: tuple, batch_idx: int) -> torch.Tensor:
         """Test step."""
-        graphs_list, labels = batch
-        batch_size = len(graphs_list)
+        graphs_batch, labels = batch
+        T = graphs_batch.t.max().item() + 1 if hasattr(graphs_batch, 't') else 50
+        batch_size = (graphs_batch.batch.max().item() + 1) // T
         
         # Forward pass
-        logits = self.forward(graphs_list)
+        logits = self.forward(graphs_batch)
         
         # Compute loss
         loss = self.criterion(logits, labels)
@@ -280,7 +285,6 @@ class TemporalGNNLightning(pl.LightningModule):
                 mode=self.monitor_mode,
                 factor=0.5,
                 patience=5,
-                verbose=True,
                 min_lr=1e-7,
             )
             return {

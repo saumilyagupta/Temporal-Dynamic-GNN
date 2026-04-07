@@ -1,0 +1,48 @@
+data:
+  source: "precomputed"
+  graph_export_root: "/workspace/GNN/CarCrash/carcrash_bbox_graphs"
+  train_manifest: "train_manifest.csv"
+  test_manifest: "test_manifest.csv"
+  val_split: 0.0  # don't split the 2 dummy files
+  num_frames: 50
+  num_workers: 0
+  pin_memory: false
+  normalize_features: false
+
+model:
+  input_dim: 13
+  hidden_dim: 16
+  temporal_dim: 32
+  num_gcn_layers: 2
+  num_gru_layers: 1
+  dropout: 0.0
+  num_classes: 2
+
+training:
+  gpu_id: -1
+  batch_size: 2
+  max_epochs: 1
+  learning_rate: 0.01
+  weight_decay: 0.0
+  gradient_clip_val: 1.0
+  accumulate_grad_batches: 1
+  optimizer: "adam"
+  scheduler: "plateau"
+  monitor_metric: "val_loss"
+  monitor_mode: "min"
+
+loss:
+  gamma: 1.0
+
+callbacks:
+  checkpoint:
+    save_top_k: 1
+    save_last: false
+    every_n_epochs: 1
+  early_stopping:
+    patience: 1
+    min_delta: 0.01
+
+logging:
+  log_every_n_steps: 1
+  experiment_name: "dummy_run"

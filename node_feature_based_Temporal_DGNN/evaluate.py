@@ -225,6 +225,7 @@ def main():
         model=model,
         focal_loss_alpha=alpha,
         focal_loss_gamma=float(config['loss']['gamma']),
+        weights_only=False,
     )
     
     # Evaluate

@@ -4,6 +4,10 @@ Vehicle detection, tracking, and PyG graph generation module.
 
 This module processes videos to detect vehicles, track them across frames,
 and generate PyTorch Geometric (PyG) graph data for each frame.
+
+For datasets that already ship bbox tensors (e.g. CarCrash NPZ ``det``), use
+``node_feature_based_Temporal_DGNN/niad_graph_from_det.py`` instead of YOLO —
+same 8-D node layout as :func:`create_frame_graph`.
 """
 
 import os

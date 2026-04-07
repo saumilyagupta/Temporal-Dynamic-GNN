@@ -88,91 +88,71 @@ class TemporalGNN(nn.Module):
         # Dropout layer
         self.drop = nn.Dropout(dropout)
     
-    def _process_single_frame(
-        self,
-        data: Data,
-    ) -> torch.Tensor:
+    def forward(self, batch) -> torch.Tensor:
         """
-        Process a single frame graph through GCN layers.
+        Forward pass through the TemporalGNN using batched operations.
         
         Args:
-            data: PyG Data object for one frame
-        
-        Returns:
-            Frame embedding [hidden_dim]
-        """
-        x = data.x
-        edge_index = data.edge_index
-        edge_weight = data.edge_weight if hasattr(data, 'edge_weight') else None
-        
-        # Handle empty graphs
-        if x is None or x.shape[0] == 0:
-            return torch.zeros(self.hidden_dim, device=self._get_device())
-        
-        # Sort nodes by node_ids for identity alignment
-        if hasattr(data, 'node_ids') and data.node_ids is not None:
-            sorted_idx = torch.argsort(data.node_ids)
-            x = x[sorted_idx]
-            # Note: We don't reindex edge_index here as the GCN operates on
-            # the original graph structure. Sorting x ensures consistent
-            # feature ordering for temporal alignment.
-        
-        # Apply GCN layers
-        for i, gcn in enumerate(self.gcn_layers):
-            x = gcn(x, edge_index, edge_weight)
-            # Apply batch norm if we have more than 1 node
-            if x.shape[0] > 1:
-                x = self.bn_layers[i](x)
-            x = F.relu(x)
-            x = self.drop(x)
-        
-        # Frame-level mean pooling
-        frame_embedding = x.mean(dim=0)  # [hidden_dim]
-        
-        return frame_embedding
-    
-    def _get_device(self) -> torch.device:
-        """Get the device of model parameters."""
-        return next(self.parameters()).device
-    
-    def forward(self, graphs_list: List[List[Data]]) -> torch.Tensor:
-        """
-        Forward pass through the TemporalGNN.
-        
-        Args:
-            graphs_list: List of graph sequences (batch)
-                - Outer list: batch dimension [B]
-                - Inner list: temporal dimension [T=30]
+            batch: PyG Batch object containing (B * T) flattened graphs.
+                   Must have 't' attribute denoting sequence timestep.
         
         Returns:
             logits: [B, num_classes] classification logits
         """
-        batch_size = len(graphs_list)
-        device = self._get_device()
+        device = next(self.parameters()).device
         
-        # Process each sample in the batch
-        batch_temporal_features = []
-        
-        for b in range(batch_size):
-            graphs = graphs_list[b]  # List of 30 Data objects
+        # Determine shapes
+        # We need to know batch size (B) and sequence length (T)
+        # Using the t attribute to find T
+        if hasattr(batch, 't'):
+            T = batch.t.max().item() + 1
+        else:
+            # Fallback if t is missing, assume T=50
+            T = 50
             
-            # Process each frame
-            frame_embeddings = []
-            for data in graphs:
-                # Move data to device
-                data = data.to(device)
-                frame_emb = self._process_single_frame(data)
-                frame_embeddings.append(frame_emb)
-            
-            # Stack frame embeddings: [T, hidden_dim]
-            temporal_seq = torch.stack(frame_embeddings, dim=0)
-            batch_temporal_features.append(temporal_seq)
+        B = batch.num_graphs // T
         
-        # Stack batch: [T, B, hidden_dim]
-        H = torch.stack(batch_temporal_features, dim=1)
+        x = batch.x
+        edge_index = batch.edge_index
+        edge_weight = batch.edge_weight if hasattr(batch, 'edge_weight') else None
+        
+        # 1. Batched Spatial GCN Pass
+        # We process all B*T graphs simultaneously
+        if x is not None and x.shape[0] > 0:
+            for i, gcn in enumerate(self.gcn_layers):
+                x = gcn(x, edge_index, edge_weight)
+                # Batch norm expects [N, C] or [N, C, L]
+                if x.shape[0] > 1:
+                    x = self.bn_layers[i](x)
+                x = F.relu(x)
+                x = self.drop(x)
+                
+            # 2. Frame-level mean pooling
+            # Pool node features into graph-level features
+            # x_pool: [B*T, hidden_dim]
+            x_pool = global_mean_pool(x, batch.batch)
+            
+            # Handle empty graphs (global_mean_pool sets them to 0 automatically)
+            # Ensure output shape is exactly B*T
+            if x_pool.shape[0] < B * T:
+                # This happens if trailing graphs are completely empty
+                padded = torch.zeros((B * T, self.hidden_dim), device=device)
+                padded[:x_pool.shape[0]] = x_pool
+                x_pool = padded
+        else:
+            # Degenerate case: Entire batch has 0 nodes
+            x_pool = torch.zeros((B * T, self.hidden_dim), device=device)
+            
+        # 3. Reshape for GRU
+        # x_pool is ordered by graph index: [graph_0, graph_1, ..., graph_B*T-1]
+        # Which is [batch_0_t0, batch_0_t1, ..., batch_1_t0, ...]
+        # We reshape to [B, T, hidden_dim]
+        H = x_pool.view(B, T, self.hidden_dim)
+        
+        # GRU expects [T, B, hidden_dim] when batch_first=False
+        H = H.transpose(0, 1)
         
         # Apply GRU for temporal reasoning
-        # H: [T, B, hidden_dim] -> output: [T, B, temporal_dim]
         _, h_final = self.gru(H)  # h_final: [num_layers, B, temporal_dim]
         
         # Take the last layer's hidden state

@@ -1,0 +1,61 @@
+# CarCrash — bbox-only graphs from data_pipeline_bbox_only (13-D nodes, no VGG).
+# Run export_pipeline.py first; then train with this config.
+
+data:
+  source: "precomputed"
+  root_dir: "/workspace/GNN/CarCrash/vgg16_features"
+  graph_export_root: "/workspace/GNN/CarCrash/carcrash_bbox_graphs"
+  train_txt: "train.txt"
+  test_txt: "test.txt"
+  train_manifest: "train_manifest.csv"
+  test_manifest: "test_manifest.csv"
+  val_split: 0.2
+  num_frames: 50
+  crash_annotation_file: "/workspace/GNN/CarCrash/videos/Crash-1500.txt"
+  num_workers: 4
+  pin_memory: true
+  normalize_features: true
+
+model:
+  type: "full"
+  input_dim: 13
+  hidden_dim: 64
+  temporal_dim: 128
+  num_gcn_layers: 2
+  num_gru_layers: 1
+  dropout: 0.3
+  num_classes: 2
+
+training:
+  gpu_id: 5
+  batch_size: 4
+  max_epochs: 100
+  learning_rate: 0.001
+  weight_decay: 0.00001
+  gradient_clip_val: 1.0
+  accumulate_grad_batches: 1
+  optimizer: "adam"
+  scheduler: "plateau"
+  monitor_metric: "val_f1"
+  monitor_mode: "max"
+
+loss:
+  type: "focal"
+  gamma: 1.0
+  # Focal balancing: α = weight for class 0 (Normal); class 1 uses (1−α).
+  # ~0.667 matches CarCrash train ratio 2:1 normal:crash (e.g. 1920/(1920+960)).
+  # Set to null to recompute from the actual training split each run.
+  alpha: 0.6667
+
+callbacks:
+  checkpoint:
+    save_top_k: 3
+    save_last: true
+    every_n_epochs: 1
+  early_stopping:
+    patience: 50
+    min_delta: 0.0001
+
+logging:
+  log_every_n_steps: 10
+  experiment_name: "carcrash_bbox_temporal_gnn"
